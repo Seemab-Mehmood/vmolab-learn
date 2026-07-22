@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>vMoLab Learn — MOLAB Pakistan</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  .font-display { font-family: 'Fraunces', serif; }
+  .font-mono { font-family: 'IBM Plex Mono', monospace; }
+  body { font-family: 'Inter', sans-serif; background-color: #0E1410; color: #E7EFE9; }
+  input[type=range] { accent-color: #5EEAD4; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: #2A332D; border-radius: 4px; }
+  .hidden-view { display: none !important; }
+  .card { background:#0F1812; border:1px solid #1E2620; border-radius:0.5rem; }
+  .field { background:#13251E; border:1px solid #27392F; border-radius:0.375rem; padding:0.5rem 0.75rem; color:#E7EFE9; font-size:0.8rem; outline:none; width:100%; }
+  .field:focus { border-color:#5EEAD4; }
+  .btn-primary { background:#5EEAD4; color:#0E1410; font-weight:600; border-radius:0.375rem; padding:0.6rem 1rem; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; transition:.15s; display:inline-block; }
+  .btn-primary:hover { background:#7FF3E1; }
+  .btn-primary:disabled { opacity:.4; cursor:not-allowed; }
+  .btn-secondary { background:#13251E; border:1px solid #27392F; color:#C7D6CC; border-radius:0.375rem; padding:0.55rem 0.95rem; font-size:0.72rem; transition:.15s; }
+  .btn-secondary:hover { border-color:#5EEAD4; color:#5EEAD4; }
+  .btn-danger { background:#2A1315; border:1px solid #4A1E22; color:#E15B64; border-radius:0.375rem; padding:0.45rem 0.8rem; font-size:0.7rem; }
+  .btn-danger:hover { background:#3A181B; }
+  .tab-btn { font-family:'IBM Plex Mono',monospace; font-size:0.68rem; letter-spacing:.08em; text-transform:uppercase; padding:0.6rem 1rem; border-radius:0.4rem 0.4rem 0 0; color:#7FA08F; border-bottom:2px solid transparent; cursor:pointer; }
+  .tab-btn.active { color:#5EEAD4; border-bottom:2px solid #5EEAD4; background:#0F1812; }
+  .badge { font-family:'IBM Plex Mono',monospace; font-size:0.6rem; padding:0.15rem 0.5rem; border-radius:0.25rem; letter-spacing:.05em; }
+  table.data-tbl th { text-align:left; padding:0.5rem 0.75rem; color:#7FA08F; font-family:'IBM Plex Mono',monospace; font-size:0.65rem; text-transform:uppercase; letter-spacing:.05em; border-bottom:1px solid #1E2620; }
+  table.data-tbl td { padding:0.5rem 0.75rem; font-size:0.75rem; border-bottom:1px solid #141C16; }
+  .modal-backdrop { position:fixed; inset:0; background:rgba(5,8,6,0.7); display:flex; align-items:center; justify-content:center; z-index:50; padding:1rem; }
+  .toast { position:fixed; bottom:1.5rem; right:1.5rem; background:#13251E; border:1px solid #2D8C69; color:#E7EFE9; padding:0.75rem 1.1rem; border-radius:0.5rem; font-size:0.8rem; z-index:60; box-shadow:0 8px 24px rgba(0,0,0,.4); }
+  .nav-pill { font-family:'IBM Plex Mono',monospace; font-size:0.68rem; letter-spacing:.06em; text-transform:uppercase; padding:0.5rem 0.9rem; border-radius:999px; color:#7FA08F; cursor:pointer; transition:.15s; }
+  .nav-pill:hover, .nav-pill.active { color:#5EEAD4; background:#13251E; }
+  .glow-ring { box-shadow: 0 0 0 1px #1E2620, 0 20px 60px -20px rgba(94,234,212,0.25); }
+</style>
+</head>
+<body class="min-h-screen w-full">
+
+<div id="toastHost"></div>
+
+<!-- ============ LANDING PAGE ============ -->
+<div id="view-landing" class="min-h-screen">
+  <nav class="sticky top-0 z-30 backdrop-blur bg-[#0B0F0C]/90 border-b border-[#1E2620] px-4 sm:px-8 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <img src="/logo.png" class="w-8 h-8 object-contain" alt="MOLAB Pakistan"/>
+      <span class="font-display text-sm text-[#F2EFE6]">vMoLab Learn</span>
+    </div>
+    <div class="hidden md:flex gap-1">
+      <div class="nav-pill active" onclick="scrollToSection('sec-home',this)">Home</div>
+      <div class="nav-pill" onclick="scrollToSection('sec-impact',this)">Live Impact</div>
+      <div class="nav-pill" onclick="scrollToSection('sec-offer',this)">What We Offer</div>
+      <div class="nav-pill" onclick="scrollToSection('sec-access',this)">Member Access</div>
+    </div>
+    <button onclick="scrollToSection('sec-access')" class="btn-secondary">Sign In</button>
+  </nav>
+
+  <!-- HERO -->
+  <section id="sec-home" class="min-h-[92vh] flex flex-col items-center justify-center text-center px-6 py-16 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-[0.06]" style="background:radial-gradient(circle at 50% 20%, #5EEAD4, transparent 60%);"></div>
+    <img src="/logo.png" class="w-24 h-24 object-contain mb-5 relative" alt="MOLAB Pakistan"/>
+    <p class="font-mono text-[11px] tracking-[0.2em] text-[#5EEAD4] uppercase mb-3 relative">Mathematical Oncology Lab Pakistan</p>
+    <h1 class="font-display text-3xl sm:text-5xl text-[#F2EFE6] max-w-3xl leading-tight relative">
+      vMoLab Learn — the world's first mathematical oncology learning community at your digital doorstep!
+    </h1>
+    <p class="text-sm sm:text-base text-[#9FB5A9] max-w-xl mt-5 relative">
+      Simulate tumor growth models in real time, register practice patients, export your data,
+      and connect with students, healthcare professionals, and researchers across the globe.
+    </p>
+    <div class="flex flex-wrap gap-3 justify-center mt-8 relative">
+      <a href="https://sites.google.com/view/molab-pakistan/join-us" target="_blank" rel="noopener" class="btn-primary text-sm px-6 py-3">Join Us Now →</a>
+      <button onclick="scrollToSection('sec-access')" class="btn-secondary px-6 py-3">Already a Member?</button>
+    </div>
+  </section>
+
+  <!-- LIVE IMPACT -->
+  <section id="sec-impact" class="px-6 sm:px-10 py-16 border-t border-[#1E2620] bg-[#0B0F0C]">
+    <div class="max-w-5xl mx-auto">
+      <p class="font-mono text-[11px] tracking-widest text-[#5EEAD4] uppercase mb-2 text-center">Live Impact</p>
+      <h2 class="font-display text-2xl sm:text-3xl text-[#F2EFE6] text-center mb-10">Our community, in real time</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="card p-5 text-center glow-ring">
+          <div id="statActiveMembers" class="font-display text-3xl text-[#5EEAD4] font-semibold">—</div>
+          <div class="font-mono text-[10px] text-[#7FA08F] uppercase tracking-wider mt-1">Active Members</div>
+        </div>
+        <div class="card p-5 text-center glow-ring">
+          <div id="statCountries" class="font-display text-3xl text-[#5EEAD4] font-semibold">—</div>
+          <div class="font-mono text-[10px] text-[#7FA08F] uppercase tracking-wider mt-1">Countries Represented</div>
+        </div>
+        <div class="card p-5 text-center glow-ring">
+          <div id="statTotalMembers" class="font-display text-3xl text-[#5EEAD4] font-semibold">—</div>
+          <div class="font-mono text-[10px] text-[#7FA08F] uppercase tracking-wider mt-1">Total Members</div>
+        </div>
+        <div class="card p-5 text-center glow-ring">
+          <div id="statSimulations" class="font-display text-3xl text-[#5EEAD4] font-semibold">—</div>
+          <div class="font-mono text-[10px] text-[#7FA08F] uppercase tracking-wider mt-1">Simulations Performed</div>
+        </div>
+      </div>
+      <div id="spotlightRow" class="grid sm:grid-cols-2 gap-4 mt-6"></div>
+    </div>
+  </section>
+
+  <!-- WHAT WE OFFER -->
+  <section id="sec-offer" class="px-6 sm:px-10 py-16 border-t border-[#1E2620]">
+    <div class="max-w-5xl mx-auto">
+      <p class="font-mono text-[11px] tracking-widest text-[#5EEAD4] uppercase mb-2 text-center">What We Offer</p>
+      <h2 class="font-display text-2xl sm:text-3xl text-[#F2EFE6] text-center mb-10">Engage with mathematical oncology, hands-on</h2>
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div class="card p-6">
+          <div class="text-2xl mb-2">🧬</div>
+          <h3 class="font-display text-lg text-[#F2EFE6] mb-1">5 Growth-Model Simulations</h3>
+          <p class="text-sm text-[#9FB5A9]">Run Exponential, Logistic, Gompertz, Von Bertalanffy, and Mendelsohn tumor-growth models with live parameter tuning and curve fitting.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-2">🩺</div>
+          <h3 class="font-display text-lg text-[#F2EFE6] mb-1">Register a Patient, Live</h3>
+          <p class="text-sm text-[#9FB5A9]">Create practice patient records, enter measurement data, and watch model-projected prognoses update in real time.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-2">📊</div>
+          <h3 class="font-display text-lg text-[#F2EFE6] mb-1">Export Graphs &amp; Data</h3>
+          <p class="text-sm text-[#9FB5A9]">Download your simulation graphs as PDF and your datasets as Excel or CSV — perfect for coursework, teaching, or research write-ups.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-2">🌍</div>
+          <h3 class="font-display text-lg text-[#F2EFE6] mb-1">Global Community Board</h3>
+          <p class="text-sm text-[#9FB5A9]">Pitch research ideas, brainstorm proposals, and reply directly to members and researchers from around the world.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMBER ACCESS -->
+  <section id="sec-access" class="px-6 sm:px-10 py-16 border-t border-[#1E2620] bg-[#0B0F0C]">
+    <div class="max-w-3xl mx-auto text-center">
+      <p class="font-mono text-[11px] tracking-widest text-[#5EEAD4] uppercase mb-2">Already a Member?</p>
+      <h2 class="font-display text-2xl sm:text-3xl text-[#F2EFE6] mb-8">Access your Member Portal here</h2>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <button onclick="showView('view-member-login')" class="card p-6 text-left hover:border-[#5EEAD4] transition">
+          <div class="text-[#5EEAD4] font-mono text-[10px] uppercase tracking-widest mb-1">Members</div>
+          <div class="font-display text-lg text-[#F2EFE6]">Student / Healthcare Professional / Researcher</div>
+          <p class="text-xs text-[#7FA08F] mt-2">Log in with your full name and MOLAB Membership ID.</p>
+        </button>
+        <button onclick="showView('view-admin-login')" class="card p-6 text-left hover:border-[#5EEAD4] transition">
+          <div class="text-[#5EEAD4] font-mono text-[10px] uppercase tracking-widest mb-1">Admin</div>
+          <div class="font-display text-lg text-[#F2EFE6]">MOLAB Pakistan Console</div>
+          <p class="text-xs text-[#7FA08F] mt-2">Manage members, review activity, moderate contributions.</p>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING CTA -->
+  <section class="px-6 sm:px-10 py-20 border-t border-[#1E2620] text-center">
+    <h2 class="font-display text-2xl sm:text-3xl text-[#F2EFE6] max-w-xl mx-auto">Join us and be a part of the real-world change in mathematical oncology.</h2>
+    <a href="https://sites.google.com/view/molab-pakistan/join-us" target="_blank" rel="noopener" class="btn-primary text-sm px-6 py-3 mt-6 inline-block">Join Us Now →</a>
+    <p class="text-[10px] text-[#4E5F55] font-mono mt-10">Educational simulation environment. Use only synthetic or de-identified data — this tool is not a diagnostic device.</p>
+  </section>
+</div>
+
+<!-- ============ MEMBER LOGIN ============ -->
+<div id="view-member-login" class="hidden-view min-h-screen flex flex-col items-center justify-center px-6">
+  <div class="card p-8 w-full max-w-sm">
+    <img src="/logo.png" class="w-14 h-14 object-contain mb-4" alt="logo"/>
+    <h2 class="font-display text-xl text-[#F2EFE6] mb-1">Member Sign In</h2>
+    <p class="text-xs text-[#7FA08F] mb-5">Use the full name and Membership ID from your MOLAB registration.</p>
+    <label class="font-mono text-[10px] uppercase tracking-wider text-[#7FA08F] block mb-1">Full Name</label>
+    <input id="memberNameInput" class="field mb-3" placeholder="e.g. Ayesha Khan"/>
+    <label class="font-mono text-[10px] uppercase tracking-wider text-[#7FA08F] block mb-1">Membership ID</label>
+    <input id="memberIdInput" class="field mb-3" placeholder="e.g. MLB-0142"/>
+    <label class="font-mono text-[10px] uppercase tracking-wider text-[#7FA08F] block mb-1">Country (optional)</label>
+    <input id="memberCountryInput" class="field mb-2" placeholder="e.g. Pakistan"/>
+    <div id="memberLoginError" class="text-[#E15B64] text-xs mb-3 hidden"></div>
+    <button onclick="attemptMemberLogin()" class="btn-primary w-full">Sign In</button>
+    <button onclick="showView('view-landing')" class="btn-secondary w-full mt-2">Back</button>
+    <button onclick="openContactAdminModal()" class="text-[11px] text-[#5EEAD4] hover:underline w-full text-center mt-3">Contact Admin</button>
+    <p class="text-[10px] text-[#4E5F55] font-mono mt-4">Not on the list? Ask your MOLAB admin to add you via the membership roster upload.</p>
+  </div>
+</div>
+
+<!-- ============ ADMIN LOGIN ============ -->
+<div id="view-admin-login" class="hidden-view min-h-screen flex flex-col items-center justify-center px-6">
+  <div class="card p-8 w-full max-w-sm">
+    <img src="/logo.png" class="w-14 h-14 object-contain mb-4" alt="logo"/>
+    <h2 class="font-display text-xl text-[#F2EFE6] mb-1">Admin Console</h2>
+    <p class="text-xs text-[#7FA08F] mb-5">MOLAB Pakistan staff access only.</p>
+    <label class="font-mono text-[10px] uppercase tracking-wider text-[#7FA08F] block mb-1">Email</label>
+    <input id="adminEmailInput" class="field mb-3" placeholder="admin@molabpakistan.org"/>
+    <label class="font-mono text-[10px] uppercase tracking-wider text-[#7FA08F] block mb-1">Password</label>
+    <input id="adminPassInput" type="password" class="field mb-2" placeholder="••••••••"/>
+    <div id="adminLoginError" class="text-[#E15B64] text-xs mb-3 hidden"></div>
+    <button onclick="attemptAdminLogin()" class="btn-primary w-full">Sign In</button>
+    <button onclick="showView('view-landing')" class="btn-secondary w-full mt-2">Back</button>
+  </div>
+</div>
+
+<!-- ============ MEMBER DASHBOARD ============ -->
+<div id="view-member-dashboard" class="hidden-view min-h-screen flex flex-col">
+  <header class="border-b border-[#1E2620] px-6 py-3 flex items-center justify-between bg-[#0B0F0C]">
+    <div class="flex items-center gap-3">
+      <img src="/logo.png" class="w-9 h-9 object-contain" alt="logo"/>
+      <div>
+        <div class="font-display text-base text-[#F2EFE6] leading-tight">vMoLab Learn</div>
+        <div class="font-mono text-[9px] tracking-widest text-[#7FA08F] uppercase">Member Workspace</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="openContactAdminModal()" class="btn-secondary">Contact Admin</button>
+      <button id="notifBell" onclick="toggleNotifPanel()" class="relative btn-secondary">🔔 <span id="notifCount" class="hidden absolute -top-1.5 -right-1.5 bg-[#E15B64] text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center">0</span></button>
+      <div class="text-right hidden sm:block">
+        <div id="memberGreetName" class="text-xs text-[#E7EFE9] font-medium">—</div>
+        <div id="memberGreetId" class="text-[10px] text-[#7FA08F] font-mono">—</div>
+      </div>
+      <button onclick="doLogout()" class="btn-secondary">Log out</button>
+    </div>
+  </header>
+
+  <div id="restrictionBanner" class="hidden-view bg-[#2A1315] border-b border-[#4A1E22] px-6 py-2 flex items-center justify-between flex-wrap gap-2">
+    <span class="text-xs text-[#F5A0A6]">⚠ Your access to vMoLab Learn has expired. Please check your membership status with MOLAB admin.</span>
+    <button onclick="openContactAdminModal()" class="btn-secondary">Contact Admin</button>
+  </div>
+
+  <div id="notifPanel" class="hidden-view fixed top-16 right-6 w-80 card p-3 z-40 max-h-96 overflow-y-auto"></div>
+
+  <nav class="flex gap-1 px-6 pt-3 bg-[#0B0F0C] border-b border-[#1E2620]">
+    <div class="tab-btn active" data-tab="tab-simulate" onclick="switchMemberTab('tab-simulate')">1 · Simulation</div>
+    <div class="tab-btn" data-tab="tab-export" onclick="switchMemberTab('tab-export')">2 · Export</div>
+    <div class="tab-btn" data-tab="tab-research" onclick="switchMemberTab('tab-research')">3 · Research Tools</div>
+  </nav>
+
+  <main class="flex-grow p-6">
+    <!-- ---- TAB: SIMULATE ---- -->
+    <div id="tab-simulate" class="tab-panel">
+      <div id="simulateLockedNotice" class="hidden-view card p-8 text-center">
+        <div class="text-3xl mb-3">🔒</div>
+        <h3 class="font-display text-lg text-[#F2EFE6] mb-2">Your access to vMoLab Learn has expired.</h3>
+        <p class="text-sm text-[#9FB5A9] mb-4">Please check your membership status with MOLAB admin.</p>
+        <button onclick="openContactAdminModal()" class="btn-primary">Contact Admin</button>
+      </div>
+      <div id="simulateContent">
+      <div class="card p-3 mb-4 text-xs text-[#F5B544] bg-[#1A1509] border-[#4A3B12]">⚠ Educational simulation only — enter synthetic or de-identified data. Not a diagnostic tool.</div>
+
+      <div class="card p-4 mb-4 flex flex-wrap items-end gap-3">
+        <div class="flex-grow min-w-[200px]">
+          <label class="font-mono text-[10px] uppercase tracking-wider text-[#7FA08F] block mb-1">Patient Record</label>
+          <select id="patientSelect" class="field" onchange="loadSelectedPatient()"></select>
+        </div>
+        <button onclick="openNewPatientModal()" class="btn-secondary">+ New Patient</button>
+        <button onclick="savePatientRecord()" class="btn-primary">Save Progress</button>
+        <button onclick="deletePatientRecord()" class="btn-danger">Delete Record</button>
+      </div>
+
+      <div id="simulatorRoot" class="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-4 hidden-view">
+        <aside class="card p-4 space-y-5">
+          <div>
+            <label class="font-mono text-[11px] uppercase tracking-wider text-[#7FA08F] block mb-2">Dynamic Model</label>
+            <select id="modelSelect" class="field">
+              <option value="exponential">Exponential Growth</option>
+              <option value="logistic">Logistic Growth</option>
+              <option value="gompertz">Gompertz Growth</option>
+              <option value="vonBertalanffy">Von Bertalanffy Growth</option>
+              <option value="mendelsohn">Mendelsohn (Power-Law) Growth</option>
+            </select>
+            <div id="equationDisplay" class="font-mono text-xs text-[#5EEAD4] bg-[#0E1410] p-2 rounded border border-[#1E2620] mt-2 text-center"></div>
+          </div>
+
+          <div>
+            <label class="font-mono text-[11px] uppercase tracking-wider text-[#7FA08F] block mb-2">Measurement Workspace</label>
+            <div class="max-h-40 overflow-y-auto border border-[#1E2620] rounded bg-[#0E1410]">
+              <table class="w-full text-[11px] font-mono">
+                <thead class="sticky top-0 bg-[#0E1410] text-[#7FA08F] border-b border-[#1E2620]">
+                  <tr><th class="text-left px-3 py-1.5">t (days)</th><th class="text-left px-3 py-1.5">Volume (mm³)</th><th class="w-8"></th></tr>
+                </thead>
+                <tbody id="dataTableBody"></tbody>
+              </table>
+            </div>
+            <div class="flex gap-2 mt-2">
+              <input id="inputT" type="number" placeholder="t" class="field w-1/2"/>
+              <input id="inputV" type="number" placeholder="V" class="field w-1/2"/>
+              <button onclick="addMeasurementRow()" class="btn-secondary">Add</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="font-mono text-[11px] uppercase tracking-wider text-[#7FA08F] block mb-2">Parameter Rails</label>
+            <div id="parameterContainer" class="space-y-3"></div>
+          </div>
+
+          <div class="space-y-3 pt-2">
+            <div class="flex items-center gap-2 bg-[#101712] p-2 rounded border border-[#1E2620]">
+              <input type="checkbox" id="holdoutToggle" onchange="updateSimulation()">
+              <label class="text-[11px] text-[#C7D6CC] select-none cursor-pointer" for="holdoutToggle">Apply terminal 30% holdout window</label>
+            </div>
+            <button onclick="executeNelderMeadFit()" class="btn-primary w-full">Execute Nelder-Mead Alignment</button>
+          </div>
+        </aside>
+
+        <div class="flex flex-col gap-4">
+          <div class="card p-5 flex flex-col" style="min-height:380px;">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h2 id="chartTitle" class="font-display text-lg text-[#F2EFE6]">—</h2>
+                <p class="text-xs text-[#7FA08F] font-mono mt-0.5">RK4 Integrator · Patient: <span id="chartPatientLabel">—</span></p>
+              </div>
+            </div>
+            <div class="relative flex-grow min-h-[300px] w-full bg-[#090D0A] rounded border border-[#141C16] overflow-hidden">
+              <canvas id="canvasChart" class="absolute inset-0 w-full h-full"></canvas>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="card p-3"><div class="font-mono text-[10px] text-[#7FA08F] uppercase">RMSE (Fit)</div><div id="metricRMSE" class="font-display text-xl mt-1 text-[#5EEAD4] font-semibold">—</div></div>
+            <div class="card p-3"><div class="font-mono text-[10px] text-[#7FA08F] uppercase">R² (Coefficient)</div><div id="metricR2" class="font-display text-xl mt-1 text-[#5EEAD4] font-semibold">—</div></div>
+            <div class="card p-3"><div class="font-mono text-[10px] text-[#7FA08F] uppercase">AIC (Criterion)</div><div id="metricAIC" class="font-display text-xl mt-1 text-[#5EEAD4] font-semibold">—</div></div>
+            <div class="card p-3"><div class="font-mono text-[10px] text-[#7FA08F] uppercase">Holdout RMSE</div><div id="metricHoldout" class="font-display text-xl mt-1 text-[#5EEAD4] font-semibold">—</div></div>
+          </div>
+
+          <div class="card p-4">
+            <div class="font-mono text-[10px] uppercase tracking-wider text-[#7FA08F] mb-1">Prognosis Note (model-projected, synthetic)</div>
+            <div id="prognosisText" class="text-sm text-[#C7D6CC]">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="noPatientMsg" class="card p-10 text-center text-[#7FA08F] text-sm">No patient record selected. Create a new patient record to begin a simulation.</div>
+      </div>
+    </div>
+
+    <!-- ---- TAB: EXPORT ---- -->
+    <div id="tab-export" class="tab-panel hidden-view">
+      <div id="exportLockedNotice" class="hidden-view card p-8 text-center">
+        <div class="text-3xl mb-3">🔒</div>
+        <h3 class="font-display text-lg text-[#F2EFE6] mb-2">Your access to vMoLab Learn has expired.</h3>
+        <p class="text-sm text-[#9FB5A9] mb-4">Please check your membership status with MOLAB admin.</p>
+        <button onclick="openContactAdminModal()" class="btn-primary">Contact Admin</button>
+      </div>
+      <div id="exportContent">
+      <div class="card p-4 mb-4 flex flex-wrap items-end gap-3">
+        <div class="flex-grow min-w-[200px]">
+          <label class="font-mono text-[10px] uppercase tracking-wider text-[#7FA08F] block mb-1">Select Patient Record</label>
+          <select id="exportPatientSelect" class="field" onchange="refreshExportPreview()"></select>
+        </div>
+      </div>
+      <div id="exportPreview" class="card p-5 text-sm text-[#7FA08F]">Select a patient record to preview export options.</div>
+      <div class="flex flex-wrap gap-3 mt-4">
+        <button onclick="exportPatientExcel()" class="btn-primary">⬇ Download Data (Excel)</button>
+        <button onclick="exportPatientCSV()" class="btn-secondary">⬇ Download Data (CSV)</button>
+        <button onclick="exportPatientPDF()" class="btn-secondary">⬇ Download Graph (PDF)</button>
+      </div>
+      </div>
+    </div>
+
+    <!-- ---- TAB: RESEARCH ---- -->
+    <div id="tab-research" class="tab-panel hidden-view">
+      <div id="researchLockedNotice" class="hidden-view card p-5 mb-5 text-center">
+        <p class="text-sm text-[#9FB5A9] mb-3">Your membership access is currently restricted — posting and replying are unavailable until this is resolved.</p>
+        <button onclick="openContactAdminModal()" class="btn-secondary">Contact Admin</button>
+      </div>
+      <div id="researchPitchForm" class="card p-5 mb-5">
+        <h3 class="font-display text-lg text-[#F2EFE6] mb-1">Pitch a research idea</h3>
+        <p class="text-xs text-[#7FA08F] mb-3">Share a brainstorm, proposal outline, or open question with the MOLAB community.</p>
+        <input id="researchTitleInput" class="field mb-2" placeholder="Title"/>
+        <textarea id="researchBodyInput" class="field mb-3" rows="4" placeholder="Describe the idea, proposal, or question..."></textarea>
+        <button onclick="submitResearchPitch()" class="btn-primary">Submit to Community Board</button>
+      </div>
+      <h3 class="font-display text-base text-[#F2EFE6] mb-2">Community Board</h3>
+      <div id="researchFeed" class="space-y-3"></div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ ADMIN DASHBOARD ============ -->
+<div id="view-admin-dashboard" class="hidden-view min-h-screen flex flex-col">
+  <header class="border-b border-[#1E2620] px-6 py-3 flex items-center justify-between bg-[#0B0F0C]">
+    <div class="flex items-center gap-3">
+      <img src="/logo.png" class="w-9 h-9 object-contain" alt="logo"/>
+      <div>
+        <div class="font-display text-base text-[#F2EFE6] leading-tight">vMoLab Learn</div>
+        <div class="font-mono text-[9px] tracking-widest text-[#7FA08F] uppercase">Admin Console</div>
+      </div>
+    </div>
+    <button onclick="doLogout()" class="btn-secondary">Log out</button>
+  </header>
+
+  <nav class="flex gap-1 px-6 pt-3 bg-[#0B0F0C] border-b border-[#1E2620] flex-wrap">
+    <div class="tab-btn active" data-tab="atab-overview" onclick="switchAdminTab('atab-overview')">Overview</div>
+    <div class="tab-btn" data-tab="atab-roster" onclick="switchAdminTab('atab-roster')">Roster Upload</div>
+    <div class="tab-btn" data-tab="atab-members" onclick="switchAdminTab('atab-members')">Members</div>
+    <div class="tab-btn" data-tab="atab-research" onclick="switchAdminTab('atab-research')">Research Pitches</div>
+    <div class="tab-btn" data-tab="atab-perks" onclick="switchAdminTab('atab-perks')">Community Perks</div>
+    <div class="tab-btn" data-tab="atab-flags" onclick="switchAdminTab('atab-flags')">Flags &amp; Moderation</div>
+    <div class="tab-btn" data-tab="atab-support" onclick="switchAdminTab('atab-support')">Contact Admin Inbox</div>
+  </nav>
+
+  <main class="flex-grow p-6">
+    <!-- OVERVIEW -->
+    <div id="atab-overview" class="tab-panel">
+      <div class="flex justify-end mb-3">
+        <button onclick="openBroadcastModal()" class="btn-primary">📢 Broadcast Announcement to All Members</button>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+        <div class="card p-4"><div class="font-mono text-[10px] text-[#7FA08F] uppercase">Roster Size</div><div id="statRoster" class="font-display text-2xl mt-1 text-[#5EEAD4] font-semibold">0</div></div>
+        <div class="card p-4"><div class="font-mono text-[10px] text-[#7FA08F] uppercase">Ever Logged In</div><div id="statLoggedIn" class="font-display text-2xl mt-1 text-[#5EEAD4] font-semibold">0</div></div>
+        <div class="card p-4"><div class="font-mono text-[10px] text-[#7FA08F] uppercase">Active Today</div><div id="statActiveToday" class="font-display text-2xl mt-1 text-[#5EEAD4] font-semibold">0</div></div>
+        <div class="card p-4"><div class="font-mono text-[10px] text-[#7FA08F] uppercase">Research Pitches</div><div id="statResearch" class="font-display text-2xl mt-1 text-[#5EEAD4] font-semibold">0</div></div>
+        <div class="card p-4"><div class="font-mono text-[10px] text-[#7FA08F] uppercase">Restricted Members</div><div id="statRestricted" class="font-display text-2xl mt-1 text-[#F5B544] font-semibold">0</div></div>
+      </div>
+      <div class="card p-4">
+        <h3 class="font-display text-base text-[#F2EFE6] mb-3">Recent Activity</h3>
+        <div id="activityFeed" class="space-y-2 max-h-96 overflow-y-auto"></div>
+      </div>
+    </div>
+
+    <!-- ROSTER UPLOAD -->
+    <div id="atab-roster" class="tab-panel hidden-view">
+      <div class="card p-5 mb-4">
+        <h3 class="font-display text-lg text-[#F2EFE6] mb-1">Upload Membership Responses</h3>
+        <p class="text-xs text-[#7FA08F] mb-3">Upload the membership response spreadsheet (.xlsx / .xls / .csv). Every full name + Membership ID pair in the file will be granted access to vMoLab Learn.</p>
+        <div class="flex flex-wrap items-center gap-3">
+          <input type="file" id="rosterFileInput" accept=".xlsx,.xls,.csv" class="text-xs text-[#C7D6CC]"/>
+          <button onclick="downloadRosterTemplate()" class="btn-secondary">Download Template</button>
+        </div>
+      </div>
+      <div id="rosterMappingCard" class="card p-5 hidden-view">
+        <h4 class="font-display text-base text-[#F2EFE6] mb-3">Map Columns</h4>
+        <div class="grid sm:grid-cols-4 gap-3 mb-4">
+          <div><label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Full Name Column</label><select id="mapNameCol" class="field"></select></div>
+          <div><label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Membership ID Column</label><select id="mapIdCol" class="field"></select></div>
+          <div><label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Email Column (optional)</label><select id="mapEmailCol" class="field"></select></div>
+          <div><label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Country Column (optional)</label><select id="mapCountryCol" class="field"></select></div>
+        </div>
+        <div class="overflow-x-auto mb-4"><table class="w-full data-tbl" id="rosterPreviewTable"></table></div>
+        <label class="flex items-center gap-2 text-xs text-[#C7D6CC] mb-3"><input type="checkbox" id="replaceRosterToggle"/> Replace entire roster instead of merging</label>
+        <button onclick="confirmRosterImport()" class="btn-primary">Confirm Import</button>
+      </div>
+    </div>
+
+    <!-- MEMBERS -->
+    <div id="atab-members" class="tab-panel hidden-view">
+      <div class="card p-4 mb-3">
+        <input id="memberSearchInput" class="field" placeholder="Search by name or membership ID..." oninput="renderMembersTable()"/>
+      </div>
+      <div class="card p-0 overflow-x-auto">
+        <table class="w-full data-tbl">
+          <thead><tr><th>Name</th><th>Membership ID</th><th>Status</th><th>Membership Expires</th><th>Logins</th><th>Last Login</th><th>Patients</th><th></th></tr></thead>
+          <tbody id="membersTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RESEARCH PITCHES -->
+    <div id="atab-research" class="tab-panel hidden-view">
+      <div id="adminResearchFeed" class="space-y-3"></div>
+    </div>
+
+    <!-- PERKS -->
+    <div id="atab-perks" class="tab-panel hidden-view">
+      <div class="card p-5 mb-5">
+        <h3 class="font-display text-lg text-[#F2EFE6] mb-1">Recognize a Member</h3>
+        <p class="text-xs text-[#7FA08F] mb-3">Award a community perk — this appears on the public landing page's Community Spotlight and notifies the member in-app.</p>
+        <div class="grid sm:grid-cols-2 gap-3 mb-3">
+          <div>
+            <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Member</label>
+            <select id="perkMemberSelect" class="field"></select>
+          </div>
+          <div>
+            <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Perk Type</label>
+            <select id="perkTypeSelect" class="field">
+              <option>Most Celebrated Member</option>
+              <option>Most Engaged Member</option>
+              <option>Rising Researcher</option>
+              <option>Community Champion</option>
+              <option value="__custom__">Custom...</option>
+            </select>
+          </div>
+        </div>
+        <input id="perkCustomInput" class="field mb-3 hidden-view" placeholder="Custom perk title"/>
+        <textarea id="perkNoteInput" class="field mb-3" rows="2" placeholder="Optional note (e.g. 'for outstanding contributions this month')"></textarea>
+        <button onclick="assignPerk()" class="btn-primary">Award Perk</button>
+      </div>
+      <h3 class="font-display text-base text-[#F2EFE6] mb-2">Current Spotlight</h3>
+      <div id="perksList" class="space-y-3"></div>
+    </div>
+
+    <!-- FLAGS -->
+    <div id="atab-flags" class="tab-panel hidden-view">
+      <div id="flagsFeed" class="space-y-3"></div>
+    </div>
+
+    <!-- CONTACT ADMIN INBOX -->
+    <div id="atab-support" class="tab-panel hidden-view">
+      <div id="supportFeed" class="space-y-3"></div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ MODALS ============ -->
+<div id="modalHost"></div>
+
+<script>
+/* ============================================================
+   API HELPERS
+   ============================================================ */
+function getAdminToken(){ return localStorage.getItem('vmolab_admin_token') || ''; }
+
+async function apiCall(method, url, body, adminAuth){
+  const headers = { 'Content-Type': 'application/json' };
+  if (adminAuth) headers['Authorization'] = 'Bearer ' + getAdminToken();
+  try {
+    const res = await fetch(url, { method, headers, body: body ? JSON.stringify(body) : undefined });
+    const data = await res.json().catch(() => ({ ok:false, error:'Invalid server response' }));
+    if (!res.ok && res.status === 401 && adminAuth){
+      showToast('Admin session expired — please sign in again.');
+      setTimeout(() => doLogout(), 1200);
+    }
+    return data;
+  } catch (e){
+    showToast('Network error — could not reach the server.');
+    return { ok:false, error: e.message };
+  }
+}
+const apiGet = (url, adminAuth) => apiCall('GET', url, null, adminAuth);
+const apiPost = (url, body, adminAuth) => apiCall('POST', url, body, adminAuth);
+const apiPut = (url, body, adminAuth) => apiCall('PUT', url, body, adminAuth);
+const apiDel = (url, adminAuth) => apiCall('DELETE', url, null, adminAuth);
+
+function showToast(msg){
+  const host = document.getElementById('toastHost');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerText = msg;
+  host.appendChild(el);
+  setTimeout(()=> el.remove(), 3200);
+}
+function escapeHtml(str){ const d = document.createElement('div'); d.innerText = str==null?'':str; return d.innerHTML; }
+
+function scrollToSection(id, el){
+  document.getElementById(id).scrollIntoView({ behavior:'smooth' });
+  document.querySelectorAll('.nav-pill').forEach(p=>p.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+/* ============================================================
+   VIEW / SESSION MANAGEMENT
+   ============================================================ */
+let session = { role: null, name: null, membershipId: null };
+
+function showView(id){
+  document.querySelectorAll('[id^="view-"]').forEach(v => v.classList.add('hidden-view'));
+  document.getElementById(id).classList.remove('hidden-view');
+}
+
+async function restoreSession(){
+  const raw = localStorage.getItem('vmolab_session');
+  const s = raw ? JSON.parse(raw) : null;
+  if (s && s.role === 'member'){
+    session = s;
+    showView('view-member-dashboard');
+    await enterMemberDashboard();
+  } else if (s && s.role === 'admin' && getAdminToken()){
+    session = s;
+    showView('view-admin-dashboard');
+    await enterAdminDashboard();
+  } else {
+    showView('view-landing');
+    loadLandingStats();
+  }
+}
+
+async function fetchMembershipStatus(){
+  const data = await apiGet('/api/membership/' + encodeURIComponent(session.membershipId));
+  session.membership = (data && data.membership) || { restricted: false };
+  return session.membership;
+}
+
+function applyMembershipGating(){
+  const restricted = session.membership && session.membership.restricted;
+  document.getElementById('restrictionBanner').classList.toggle('hidden-view', !restricted);
+  document.getElementById('simulateLockedNotice').classList.toggle('hidden-view', !restricted);
+  document.getElementById('simulateContent').classList.toggle('hidden-view', !!restricted);
+  document.getElementById('exportLockedNotice').classList.toggle('hidden-view', !restricted);
+  document.getElementById('exportContent').classList.toggle('hidden-view', !!restricted);
+  document.getElementById('researchLockedNotice').classList.toggle('hidden-view', !restricted);
+  document.getElementById('researchPitchForm').classList.toggle('hidden-view', !!restricted);
+}
+
+function showExpiredAccessPopup(){
+  showModal(`
+    <div class="text-center">
+      <div class="text-3xl mb-3">🔒</div>
+      <h3 class="font-display text-lg text-[#F2EFE6] mb-2">Your access to vMoLab Learn has expired.</h3>
+      <p class="text-sm text-[#9FB5A9] mb-5">Please check your membership status with MOLAB admin.</p>
+      <div class="flex gap-2 justify-center">
+        <button class="btn-secondary" onclick="closeModal()">Continue</button>
+        <button class="btn-primary" onclick="closeModal(); openContactAdminModal();">Contact Admin</button>
+      </div>
+    </div>
+  `);
+}
+
+function doLogout(){
+  localStorage.removeItem('vmolab_session');
+  localStorage.removeItem('vmolab_admin_token');
+  location.reload();
+}
+
+/* ============================================================
+   LANDING PAGE — LIVE STATS
+   ============================================================ */
+async function loadLandingStats(){
+  const data = await apiGet('/api/stats');
+  if (!data.ok) return;
+  document.getElementById('statActiveMembers').innerText = data.activeMembers;
+  document.getElementById('statCountries').innerText = data.countries;
+  document.getElementById('statTotalMembers').innerText = data.totalMembers;
+  document.getElementById('statSimulations').innerText = data.simulations;
+
+  const row = document.getElementById('spotlightRow');
+  row.innerHTML = data.spotlight && data.spotlight.length ? data.spotlight.map(p => `
+    <div class="card p-4 flex items-center gap-3">
+      <div class="text-2xl">🏆</div>
+      <div>
+        <div class="font-mono text-[10px] text-[#5EEAD4] uppercase tracking-wider">${escapeHtml(p.perkType)}</div>
+        <div class="font-display text-base text-[#F2EFE6]">${escapeHtml(p.memberName)}</div>
+        ${p.note ? `<div class="text-xs text-[#7FA08F] mt-0.5">${escapeHtml(p.note)}</div>` : ''}
+      </div>
+    </div>
+  `).join('') : '';
+}
+
+/* ============================================================
+   MEMBER LOGIN
+   ============================================================ */
+async function attemptMemberLogin(){
+  const name = document.getElementById('memberNameInput').value;
+  const membershipId = document.getElementById('memberIdInput').value;
+  const country = document.getElementById('memberCountryInput').value;
+  const errBox = document.getElementById('memberLoginError');
+  errBox.classList.add('hidden');
+
+  if (!name.trim() || !membershipId.trim()){
+    errBox.innerText = 'Please enter both your full name and Membership ID.';
+    errBox.classList.remove('hidden');
+    return;
+  }
+
+  const result = await apiPost('/api/auth/member-login', { name, membershipId, country });
+  if (!result.ok){
+    errBox.innerText = result.error || 'Sign in failed.';
+    errBox.classList.remove('hidden');
+    return;
+  }
+  session = { role: 'member', name: result.member.name, membershipId: result.member.membershipId, membership: result.membership };
+  localStorage.setItem('vmolab_session', JSON.stringify(session));
+  showView('view-member-dashboard');
+  await enterMemberDashboard();
+}
+
+/* ============================================================
+   ADMIN LOGIN
+   ============================================================ */
+async function attemptAdminLogin(){
+  const email = document.getElementById('adminEmailInput').value.trim();
+  const password = document.getElementById('adminPassInput').value;
+  const errBox = document.getElementById('adminLoginError');
+  errBox.classList.add('hidden');
+
+  const result = await apiPost('/api/auth/admin-login', { email, password });
+  if (!result.ok){
+    errBox.innerText = result.error || 'Incorrect email or password.';
+    errBox.classList.remove('hidden');
+    return;
+  }
+  localStorage.setItem('vmolab_admin_token', result.token);
+  session = { role: 'admin', name: 'Admin', membershipId: null };
+  localStorage.setItem('vmolab_session', JSON.stringify(session));
+  showView('view-admin-dashboard');
+  await enterAdminDashboard();
+}
+
+/* ============================================================
+   MODEL REGISTRY (5 mathematical growth models)
+   ============================================================ */
+const MODELS = {
+  exponential: {
+    name: "Exponential Growth Model", eq: "dV/dt = rV",
+    params: [{ key:"r", label:"growth rate r", def:0.03, min:0.001, max:0.2 }],
+    deriv: (t,V,p) => [p.r * Math.max(V[0],0)]
+  },
+  logistic: {
+    name: "Logistic Growth Model", eq: "dV/dt = rV(1 − V/K)",
+    params: [
+      { key:"r", label:"growth rate r", def:0.08, min:0.001, max:0.4 },
+      { key:"K", label:"carrying capacity K", def:1500, min:100, max:3000 }
+    ],
+    deriv: (t,V,p) => [p.r * Math.max(V[0],0) * (1 - V[0]/p.K)]
+  },
+  gompertz: {
+    name: "Gompertz Growth Model", eq: "dV/dt = rV · ln(K/V)",
+    params: [
+      { key:"r", label:"growth rate r", def:0.06, min:0.001, max:0.3 },
+      { key:"K", label:"carrying capacity K", def:1500, min:100, max:3000 }
+    ],
+    deriv: (t,V,p) => [p.r * Math.max(V[0],1e-5) * Math.log(p.K / Math.max(V[0],1e-5))]
+  },
+  vonBertalanffy: {
+    name: "Von Bertalanffy Growth Model", eq: "dV/dt = aV^(2/3) − bV",
+    params: [
+      { key:"a", label:"anabolism rate a", def:0.8, min:0.05, max:3 },
+      { key:"b", label:"catabolism rate b", def:0.05, min:0.001, max:0.3 }
+    ],
+    deriv: (t,V,p) => [p.a * Math.pow(Math.max(V[0],1e-5), 2/3) - p.b * V[0]]
+  },
+  mendelsohn: {
+    name: "Mendelsohn (Power-Law) Growth Model", eq: "dV/dt = aV^b",
+    params: [
+      { key:"a", label:"rate coefficient a", def:0.05, min:0.001, max:1 },
+      { key:"b", label:"power exponent b", def:0.85, min:0.1, max:2 }
+    ],
+    deriv: (t,V,p) => [p.a * Math.pow(Math.max(V[0],1e-5), p.b)]
+  }
+};
+
+function rungeKutta4(deriv, y0, t0, tEnd, steps, p){
+  let dt = (tEnd - t0) / steps, trajectory = [], t = t0, y = [...y0];
+  trajectory.push({ t, v: y[0] });
+  for (let i=0;i<steps;i++){
+    let k1 = deriv(t,y,p);
+    let yk2 = y.map((val,idx)=> val + 0.5*dt*k1[idx]);
+    let k2 = deriv(t+0.5*dt, yk2, p);
+    let yk3 = y.map((val,idx)=> val + 0.5*dt*k2[idx]);
+    let k3 = deriv(t+0.5*dt, yk3, p);
+    let yk4 = y.map((val,idx)=> val + dt*k3[idx]);
+    let k4 = deriv(t+dt, yk4, p);
+    y = y.map((val,idx)=> val + (dt/6)*(k1[idx]+2*k2[idx]+2*k3[idx]+k4[idx]));
+    t += dt;
+    trajectory.push({ t, v: y[0] });
+  }
+  return trajectory;
+}
+
+function interpolateTrajectoryValue(trajectory, targetT){
+  if (targetT <= trajectory[0].t) return trajectory[0].v;
+  if (targetT >= trajectory[trajectory.length-1].t) return trajectory[trajectory.length-1].v;
+  for (let i=1;i<trajectory.length;i++){
+    if (trajectory[i].t >= targetT){
+      let p1 = trajectory[i-1], p2 = trajectory[i];
+      let ratio = (targetT - p1.t) / (p2.t - p1.t);
+      return p1.v + ratio * (p2.v - p1.v);
+    }
+  }
+  return 0;
+}
+
+function generatePrognosis(modelKey, params, trajectory){
+  const last = trajectory[trajectory.length-1];
+  const horizon = 30;
+  const extended = rungeKutta4(MODELS[modelKey].deriv, [last.v], last.t, last.t+horizon, 40, params);
+  const projected = extended[extended.length-1].v;
+  const deltaPct = ((projected-last.v)/Math.max(last.v,1e-5))*100;
+  let phase;
+  if (modelKey==='gompertz' || modelKey==='logistic'){
+    const ratio = last.v/params.K;
+    phase = ratio<0.3 ? 'early expansion phase' : (ratio<0.75 ? 'decelerating mid-growth phase' : 'approaching plateau / carrying capacity');
+  } else if (modelKey==='vonBertalanffy'){
+    phase = (params.a*Math.pow(last.v,2/3) > params.b*last.v) ? 'net growth phase' : 'growth deceleration approaching equilibrium';
+  } else if (modelKey==='exponential'){
+    phase = 'sustained unconstrained expansion';
+  } else {
+    phase = params.b>1 ? 'accelerating (super-linear) growth' : 'sub-linear decelerating growth';
+  }
+  return `Projected volume in ${horizon} days: ${projected.toFixed(1)} mm³ (${deltaPct>=0?'+':''}${deltaPct.toFixed(1)}%). Current trend: ${phase}. This is a mathematical projection from the fitted model only — not a clinical prediction.`;
+}
+
+/* ============================================================
+   MEMBER DASHBOARD — SIMULATION STATE
+   ============================================================ */
+let patients = [];
+let activePatient = null;
+let activeModelKey = 'gompertz';
+let activeParams = {};
+let computedTrajectory = [];
+let dataset = [];
+
+async function enterMemberDashboard(){
+  document.getElementById('memberGreetName').innerText = session.name;
+  document.getElementById('memberGreetId').innerText = session.membershipId;
+  await fetchMembershipStatus();
+  applyMembershipGating();
+  if (session.membership && session.membership.restricted) showExpiredAccessPopup();
+  switchMemberTab('tab-simulate');
+  await loadNotifications();
+  await loadPatients();
+  await refreshExportPatientSelect();
+  await renderResearchFeed();
+}
+
+function switchMemberTab(id){
+  document.querySelectorAll('#view-member-dashboard .tab-panel').forEach(p=>p.classList.add('hidden-view'));
+  document.getElementById(id).classList.remove('hidden-view');
+  document.querySelectorAll('#view-member-dashboard .tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`#view-member-dashboard .tab-btn[data-tab="${id}"]`).classList.add('active');
+  if (id === 'tab-export') refreshExportPatientSelect();
+  if (id === 'tab-research') renderResearchFeed();
+}
+
+async function loadNotifications(){
+  const data = await apiGet('/api/notifications/' + encodeURIComponent(session.membershipId));
+  const unread = (data.notifications||[]).filter(n=>!n.read);
+  const countEl = document.getElementById('notifCount');
+  if (unread.length>0){ countEl.classList.remove('hidden'); countEl.innerText = unread.length; }
+  else countEl.classList.add('hidden');
+}
+
+async function toggleNotifPanel(){
+  const panel = document.getElementById('notifPanel');
+  if (!panel.classList.contains('hidden-view')){ panel.classList.add('hidden-view'); return; }
+  const data = await apiGet('/api/notifications/' + encodeURIComponent(session.membershipId));
+  const notes = (data.notifications || []).slice().reverse();
+  panel.innerHTML = notes.length ? notes.map(n=>`
+    <div class="border-b border-[#1E2620] py-2 text-xs">
+      <div class="text-[#7FA08F] font-mono text-[9px]">${new Date(n.date).toLocaleString()}</div>
+      <div class="text-[#E7EFE9] mt-1">${escapeHtml(n.msg)}</div>
+    </div>`).join('') : '<div class="text-xs text-[#7FA08F] p-2">No messages yet.</div>';
+  panel.classList.remove('hidden-view');
+  await apiPost('/api/notifications/' + encodeURIComponent(session.membershipId) + '/mark-read', {});
+  document.getElementById('notifCount').classList.add('hidden');
+}
+
+/* ---- Patient records ---- */
+async function loadPatients(){
+  const data = await apiGet('/api/patients/' + encodeURIComponent(session.membershipId));
+  patients = data.patients || [];
+  const sel = document.getElementById('patientSelect');
+  sel.innerHTML = '<option value="">— Select a patient record —</option>' +
+    patients.map(p => `<option value="${p.id}">${escapeHtml(p.patientName)}</option>`).join('');
+  if (patients.length){ sel.value = patients[0].id; loadSelectedPatient(); }
+  else { document.getElementById('simulatorRoot').classList.add('hidden-view'); document.getElementById('noPatientMsg').classList.remove('hidden-view'); }
+}
+
+function openNewPatientModal(){
+  showModal(`
+    <h3 class="font-display text-lg text-[#F2EFE6] mb-3">New Patient Record</h3>
+    <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Patient Label / ID (synthetic)</label>
+    <input id="newPatientNameInput" class="field mb-4" placeholder="e.g. Patient A / Case 001"/>
+    <div class="flex gap-2 justify-end">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="createNewPatient()">Create</button>
+    </div>
+  `);
+}
+
+async function createNewPatient(){
+  const name = document.getElementById('newPatientNameInput').value.trim();
+  if (!name){ showToast('Please enter a patient label.'); return; }
+  const result = await apiPost('/api/patients/' + encodeURIComponent(session.membershipId), { patientName: name });
+  if (!result.ok){ showToast(result.error || 'Could not create patient.'); return; }
+  closeModal();
+  await loadPatients();
+  document.getElementById('patientSelect').value = result.patient.id;
+  loadSelectedPatient();
+  showToast('Patient record created.');
+}
+
+function loadSelectedPatient(){
+  const id = document.getElementById('patientSelect').value;
+  activePatient = patients.find(p => p.id === id) || null;
+  if (!activePatient){
+    document.getElementById('simulatorRoot').classList.add('hidden-view');
+    document.getElementById('noPatientMsg').classList.remove('hidden-view');
+    return;
+  }
+  document.getElementById('simulatorRoot').classList.remove('hidden-view');
+  document.getElementById('noPatientMsg').classList.add('hidden-view');
+  document.getElementById('chartPatientLabel').innerText = activePatient.patientName;
+
+  activeModelKey = activePatient.model || 'gompertz';
+  dataset = JSON.parse(JSON.stringify(activePatient.dataset || []));
+  activeParams = Object.assign({}, activePatient.params || {});
+  MODELS[activeModelKey].params.forEach(pp => { if (activeParams[pp.key]===undefined) activeParams[pp.key]=pp.def; });
+
+  document.getElementById('modelSelect').value = activeModelKey;
+  document.getElementById('holdoutToggle').checked = !!activePatient.holdout;
+  document.getElementById('equationDisplay').innerText = MODELS[activeModelKey].eq;
+  document.getElementById('chartTitle').innerText = MODELS[activeModelKey].name;
+
+  buildParameterRails();
+  renderDataTable();
+  updateSimulation();
+}
+
+async function savePatientRecord(){
+  if (!activePatient) return;
+  const payload = {
+    model: activeModelKey, params: activeParams, dataset: dataset,
+    holdout: document.getElementById('holdoutToggle').checked
+  };
+  const result = await apiPut('/api/patients/' + encodeURIComponent(session.membershipId) + '/' + encodeURIComponent(activePatient.id), payload);
+  if (!result.ok){ showToast(result.error || 'Could not save.'); return; }
+  activePatient = result.patient;
+  const idx = patients.findIndex(p=>p.id===activePatient.id);
+  patients[idx] = activePatient;
+  showToast('Patient record saved.');
+}
+
+async function deletePatientRecord(){
+  if (!activePatient) return;
+  if (!confirm(`Delete patient record "${activePatient.patientName}"? This cannot be undone.`)) return;
+  await apiDel('/api/patients/' + encodeURIComponent(session.membershipId) + '/' + encodeURIComponent(activePatient.id));
+  activePatient = null;
+  await loadPatients();
+  showToast('Patient record deleted.');
+}
+
+document.addEventListener('change', (e) => {
+  if (e.target && e.target.id === 'modelSelect'){
+    activeModelKey = e.target.value;
+    document.getElementById('equationDisplay').innerText = MODELS[activeModelKey].eq;
+    document.getElementById('chartTitle').innerText = MODELS[activeModelKey].name;
+    activeParams = {};
+    MODELS[activeModelKey].params.forEach(p => activeParams[p.key] = p.def);
+    buildParameterRails();
+    updateSimulation();
+  }
+});
+
+function buildParameterRails(){
+  const container = document.getElementById('parameterContainer');
+  container.innerHTML = '';
+  MODELS[activeModelKey].params.forEach(p => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'bg-[#0E1410] p-2 rounded border border-[#1E2620]';
+    wrapper.innerHTML = `
+      <div class="flex justify-between text-[11px] mb-1">
+        <span class="text-[#C7D6CC]">${p.label}</span>
+        <span class="font-mono text-[#5EEAD4] font-semibold" id="val_${p.key}">${activeParams[p.key].toFixed(4)}</span>
+      </div>
+      <input type="range" min="${p.min}" max="${p.max}" step="${(p.max-p.min)/200}" value="${activeParams[p.key]}" class="w-full cursor-pointer" id="slide_${p.key}">
+    `;
+    container.appendChild(wrapper);
+    document.getElementById(`slide_${p.key}`).addEventListener('input', (e) => {
+      activeParams[p.key] = parseFloat(e.target.value);
+      document.getElementById(`val_${p.key}`).innerText = activeParams[p.key].toFixed(4);
+      updateSimulation();
+    });
+  });
+}
+
+function renderDataTable(){
+  const tbody = document.getElementById('dataTableBody');
+  tbody.innerHTML = '';
+  dataset.forEach((row, idx) => {
+    const tr = document.createElement('tr');
+    tr.className = 'border-t border-[#1E2620] hover:bg-[#13251E]';
+    tr.innerHTML = `<td class="px-3 py-1">${row.t}</td><td class="px-3 py-1">${row.v}</td>
+      <td class="text-right px-2"><button onclick="removeMeasurementRow(${idx})" class="text-[#E15B64] hover:underline px-1">×</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function addMeasurementRow(){
+  const t = parseFloat(document.getElementById('inputT').value);
+  const v = parseFloat(document.getElementById('inputV').value);
+  if (!isNaN(t) && !isNaN(v)){
+    dataset.push({t,v});
+    dataset.sort((a,b)=>a.t-b.t);
+    document.getElementById('inputT').value=''; document.getElementById('inputV').value='';
+    renderDataTable(); updateSimulation();
+  }
+}
+function removeMeasurementRow(idx){ dataset.splice(idx,1); renderDataTable(); updateSimulation(); }
+
+function executeNelderMeadFit(){
+  const currentModel = MODELS[activeModelKey];
+  const trainingSubset = document.getElementById('holdoutToggle').checked ? dataset.slice(0, Math.ceil(dataset.length*0.7)) : dataset;
+  if (trainingSubset.length===0) return;
+  const parametersToOptim = currentModel.params.map(p=>p.key);
+  const initialGuess = currentModel.params.map(p=>activeParams[p.key]);
+
+  function computeObjectiveError(vector){
+    const pMapped = {};
+    parametersToOptim.forEach((key,idx)=> pMapped[key]=Math.max(vector[idx],1e-6));
+    const tMax = Math.max(...dataset.map(d=>d.t),10)*1.05;
+    const path = rungeKutta4(currentModel.deriv, [dataset[0].v], 0, tMax, 150, pMapped);
+    let squareSum=0;
+    trainingSubset.forEach(pt=>{ const pred = interpolateTrajectoryValue(path, pt.t); squareSum += Math.pow(pred-pt.v,2); });
+    return squareSum;
+  }
+
+  const dim = initialGuess.length;
+  let simplex = [initialGuess.slice()];
+  for (let i=0;i<dim;i++){
+    const vertex = initialGuess.slice();
+    vertex[i] = vertex[i]!==0 ? vertex[i]*1.15 : 0.05;
+    simplex.push(vertex);
+  }
+  for (let iter=0; iter<150; iter++){
+    simplex.sort((a,b)=>computeObjectiveError(a)-computeObjectiveError(b));
+    const centroid = new Array(dim).fill(0);
+    for (let i=0;i<dim;i++) for (let j=0;j<dim;j++) centroid[j]+=simplex[i][j]/dim;
+    const worst = simplex[dim];
+    const reflected = centroid.map((c,idx)=>c+1.0*(c-worst[idx]));
+    if (computeObjectiveError(reflected) < computeObjectiveError(simplex[0])) simplex[dim]=reflected;
+    else simplex[dim] = centroid.map((c,idx)=>c+0.5*(worst[idx]-c));
+  }
+  simplex.sort((a,b)=>computeObjectiveError(a)-computeObjectiveError(b));
+  parametersToOptim.forEach((key,idx)=>{
+    const meta = currentModel.params.find(p=>p.key===key);
+    activeParams[key] = Math.min(Math.max(simplex[0][idx], meta.min), meta.max);
+  });
+  buildParameterRails();
+  updateSimulation();
+}
+
+function updateSimulation(){
+  if (dataset.length===0) return;
+  const tMax = Math.max(...dataset.map(d=>d.t),10)*1.05;
+  computedTrajectory = rungeKutta4(MODELS[activeModelKey].deriv, [dataset[0].v], 0, tMax, 200, activeParams);
+  calculateMetricsAndOutputs(computedTrajectory);
+  drawChartCanvas();
+  document.getElementById('prognosisText').innerText = generatePrognosis(activeModelKey, activeParams, computedTrajectory);
+}
+
+function calculateMetricsAndOutputs(trajectory){
+  const applyHoldout = document.getElementById('holdoutToggle').checked;
+  const separationBoundary = Math.ceil(dataset.length*0.7);
+  const trainingData = applyHoldout ? dataset.slice(0, separationBoundary) : dataset;
+  const holdoutData = applyHoldout ? dataset.slice(separationBoundary) : [];
+
+  let residualSumSquares=0, totalSumSquares=0;
+  const meanValue = trainingData.reduce((acc,c)=>acc+c.v,0)/trainingData.length;
+  trainingData.forEach(pt=>{
+    const prediction = interpolateTrajectoryValue(trajectory, pt.t);
+    residualSumSquares += Math.pow(pt.v-prediction,2);
+    totalSumSquares += Math.pow(pt.v-meanValue,2);
+  });
+  const rmseVal = Math.sqrt(residualSumSquares/trainingData.length);
+  const r2Val = totalSumSquares>0 ? (1-(residualSumSquares/totalSumSquares)) : 1;
+  const paramCount = MODELS[activeModelKey].params.length;
+  const aicVal = trainingData.length*Math.log(Math.max(residualSumSquares/trainingData.length,1e-10)) + 2*paramCount;
+
+  document.getElementById('metricRMSE').innerText = rmseVal.toFixed(2);
+  document.getElementById('metricR2').innerText = r2Val.toFixed(3);
+  document.getElementById('metricAIC').innerText = aicVal.toFixed(1);
+
+  if (applyHoldout && holdoutData.length>0){
+    let holdoutResiduals=0;
+    holdoutData.forEach(pt=>{ const pred=interpolateTrajectoryValue(trajectory, pt.t); holdoutResiduals += Math.pow(pt.v-pred,2); });
+    document.getElementById('metricHoldout').innerText = Math.sqrt(holdoutResiduals/holdoutData.length).toFixed(2);
+  } else {
+    document.getElementById('metricHoldout').innerText = '—';
+  }
+}
+
+function drawChartCanvas(canvasEl){
+  const canvas = canvasEl || document.getElementById('canvasChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const width = canvas.parentElement.clientWidth;
+  const height = canvas.parentElement.clientHeight;
+  canvas.width = width*dpr; canvas.height = height*dpr;
+  ctx.scale(dpr,dpr);
+  if (dataset.length===0 || computedTrajectory.length===0) return;
+
+  const paddingLeft=55, paddingRight=30, paddingTop=20, paddingBottom=40;
+  const renderWidth = width-paddingLeft-paddingRight, renderHeight = height-paddingTop-paddingBottom;
+  const maxT = computedTrajectory[computedTrajectory.length-1].t;
+  const maxV = Math.max(...dataset.map(d=>d.v), ...computedTrajectory.map(c=>c.v))*1.1;
+
+  function mapXY(t,v){ return { x: paddingLeft+(t/maxT)*renderWidth, y: paddingTop+renderHeight-(v/maxV)*renderHeight }; }
+
+  ctx.fillStyle = '#090D0A'; ctx.fillRect(0,0,width,height);
+
+  const applyHoldout = document.getElementById('holdoutToggle').checked;
+  const separationBoundary = Math.ceil(dataset.length*0.7);
+  if (applyHoldout && dataset[separationBoundary-1]){
+    const splitT = dataset[separationBoundary-1].t;
+    const startX = mapXY(splitT,0).x;
+    ctx.fillStyle='rgba(225,91,100,0.05)'; ctx.fillRect(startX,paddingTop,(width-paddingRight)-startX,renderHeight);
+    ctx.strokeStyle='rgba(225,91,100,0.2)'; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(startX,paddingTop); ctx.lineTo(startX,paddingTop+renderHeight); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.strokeStyle='#1E2620'; ctx.lineWidth=1;
+  for (let i=0;i<=4;i++){
+    const valV=(maxV/4)*i, c=mapXY(0,valV);
+    ctx.beginPath(); ctx.moveTo(paddingLeft,c.y); ctx.lineTo(width-paddingRight,c.y); ctx.stroke();
+    ctx.fillStyle='#7FA08F'; ctx.font="10px 'IBM Plex Mono'"; ctx.fillText(Math.round(valV),10,c.y+4);
+  }
+  for (let i=0;i<=5;i++){
+    const valT=(maxT/5)*i, c=mapXY(valT,0);
+    ctx.beginPath(); ctx.moveTo(c.x,paddingTop); ctx.lineTo(c.x,height-paddingBottom); ctx.stroke();
+    ctx.fillStyle='#7FA08F'; ctx.font="10px 'IBM Plex Mono'"; ctx.fillText(valT.toFixed(0),c.x-6,height-paddingBottom+16);
+  }
+
+  ctx.strokeStyle='#5EEAD4'; ctx.lineWidth=2.5; ctx.beginPath();
+  computedTrajectory.forEach((pt,idx)=>{ const c=mapXY(pt.t,pt.v); if(idx===0) ctx.moveTo(c.x,c.y); else ctx.lineTo(c.x,c.y); });
+  ctx.stroke();
+
+  dataset.forEach((pt,idx)=>{
+    const c = mapXY(pt.t,pt.v);
+    const isHoldout = applyHoldout && idx>=separationBoundary;
+    ctx.fillStyle = isHoldout ? '#E15B64' : '#F5B544';
+    ctx.beginPath(); ctx.arc(c.x,c.y,4,0,2*Math.PI); ctx.fill();
+    ctx.strokeStyle='#0E1410'; ctx.lineWidth=1; ctx.stroke();
+  });
+}
+window.addEventListener('resize', () => { if (activePatient) drawChartCanvas(); });
+
+/* ============================================================
+   EXPORT TAB
+   ============================================================ */
+async function refreshExportPatientSelect(){
+  const data = await apiGet('/api/patients/' + encodeURIComponent(session.membershipId));
+  patients = data.patients || [];
+  const sel = document.getElementById('exportPatientSelect');
+  sel.innerHTML = '<option value="">— Select a patient record —</option>' +
+    patients.map(p=>`<option value="${p.id}">${escapeHtml(p.patientName)}</option>`).join('');
+  if (activePatient) sel.value = activePatient.id;
+  refreshExportPreview();
+}
+
+function refreshExportPreview(){
+  const id = document.getElementById('exportPatientSelect').value;
+  const p = patients.find(x=>x.id===id);
+  const box = document.getElementById('exportPreview');
+  if (!p){ box.innerHTML = 'Select a patient record to preview export options.'; return; }
+  box.innerHTML = `
+    <div class="font-display text-base text-[#F2EFE6] mb-1">${escapeHtml(p.patientName)}</div>
+    <div class="text-xs text-[#7FA08F] font-mono mb-2">${MODELS[p.model].name}</div>
+    <div class="text-xs text-[#C7D6CC]">${p.dataset.length} measurements recorded · last updated ${new Date(p.updatedAt).toLocaleString()}</div>
+  `;
+}
+
+function getExportPatient(){
+  const id = document.getElementById('exportPatientSelect').value;
+  const p = patients.find(x=>x.id===id);
+  if (!p){ showToast('Select a patient record first.'); return null; }
+  return p;
+}
+
+function exportPatientCSV(){
+  const p = getExportPatient(); if (!p) return;
+  let csv = 't (days),Volume (mm3)\n' + p.dataset.map(r=>`${r.t},${r.v}`).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `${p.patientName.replace(/\s+/g,'_')}_data.csv`; a.click();
+}
+
+function exportPatientExcel(){
+  const p = getExportPatient(); if (!p) return;
+  const wb = XLSX.utils.book_new();
+  const wsData = XLSX.utils.json_to_sheet(p.dataset.map(r=>({ 't (days)': r.t, 'Volume (mm3)': r.v })));
+  XLSX.utils.book_append_sheet(wb, wsData, 'Measurements');
+  const traj = rungeKutta4(MODELS[p.model].deriv, [p.dataset[0].v], 0, Math.max(...p.dataset.map(d=>d.t),10)*1.05, 100, p.params);
+  const wsTraj = XLSX.utils.json_to_sheet(traj.map(r=>({ 't': r.t.toFixed(2), 'Fitted Volume': r.v.toFixed(2) })));
+  XLSX.utils.book_append_sheet(wb, wsTraj, 'Fitted Trajectory');
+  const meta = [{ Patient: p.patientName, Model: MODELS[p.model].name, ...p.params, Member: session.name, MembershipID: session.membershipId, Exported: new Date().toLocaleString() }];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(meta), 'Summary');
+  XLSX.writeFile(wb, `${p.patientName.replace(/\s+/g,'_')}_vMoLab.xlsx`);
+}
+
+function exportPatientPDF(){
+  const p = getExportPatient(); if (!p) return;
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = 900; tempCanvas.height = 500;
+  document.body.appendChild(tempCanvas);
+  tempCanvas.style.position='fixed'; tempCanvas.style.left='-9999px';
+  const savedDataset = dataset, savedTraj = computedTrajectory, savedModel = activeModelKey, savedParams = activeParams;
+  dataset = p.dataset; activeModelKey = p.model; activeParams = p.params;
+  computedTrajectory = rungeKutta4(MODELS[p.model].deriv, [p.dataset[0].v], 0, Math.max(...p.dataset.map(d=>d.t),10)*1.05, 200, p.params);
+  drawChartCanvas(tempCanvas);
+  const imgData = tempCanvas.toDataURL('image/png');
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'landscape' });
+  doc.setFontSize(16); doc.text('vMoLab Learn — Simulation Report', 14, 16);
+  doc.setFontSize(10);
+  doc.text(`Patient: ${p.patientName}`, 14, 24);
+  doc.text(`Model: ${MODELS[p.model].name}`, 14, 30);
+  doc.text(`Member: ${session.name} (${session.membershipId})`, 14, 36);
+  doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 42);
+  doc.addImage(imgData, 'PNG', 14, 48, 260, 130);
+  doc.text('Educational simulation output — not a diagnostic tool.', 14, 190);
+  doc.save(`${p.patientName.replace(/\s+/g,'_')}_report.pdf`);
+
+  dataset = savedDataset; computedTrajectory = savedTraj; activeModelKey = savedModel; activeParams = savedParams;
+  document.body.removeChild(tempCanvas);
+  if (activePatient) drawChartCanvas();
+}
+
+/* ============================================================
+   RESEARCH TOOLS (member-facing, with replies)
+   ============================================================ */
+async function submitResearchPitch(){
+  const title = document.getElementById('researchTitleInput').value.trim();
+  const body = document.getElementById('researchBodyInput').value.trim();
+  if (!title || !body){ showToast('Please fill in both a title and a description.'); return; }
+  const result = await apiPost('/api/research', { name: session.name, membershipId: session.membershipId, title, body });
+  if (!result.ok){ showToast(result.error || 'Could not submit.'); return; }
+  document.getElementById('researchTitleInput').value=''; document.getElementById('researchBodyInput').value='';
+  showToast('Pitch submitted to the community board.');
+  renderResearchFeed();
+}
+
+function renderRepliesHtml(post, asAdmin){
+  const replies = post.replies || [];
+  const repliesHtml = replies.map(r => `
+    <div class="pl-3 border-l-2 border-[#1E2620] mt-2">
+      <div class="text-[10px] font-mono text-[#7FA08F]">${escapeHtml(r.authorName)}${r.role==='admin' ? ' <span class="text-[#5EEAD4]">· Admin</span>' : ''} · ${new Date(r.date).toLocaleString()}</div>
+      <div class="text-sm text-[#C7D6CC]">${escapeHtml(r.body)}</div>
+    </div>`).join('');
+  const memberRestricted = !asAdmin && session.membership && session.membership.restricted;
+  const replyBoxHtml = memberRestricted
+    ? `<p class="text-xs text-[#7FA08F] mt-3">Your membership access is currently restricted — <a href="#" onclick="openContactAdminModal();return false;" class="text-[#5EEAD4] hover:underline">contact admin</a> to reply.</p>`
+    : `<div class="flex gap-2 mt-3">
+        <input class="field" placeholder="Write a reply..." id="reply-input-${post.id}"/>
+        <button class="btn-secondary" onclick="submitReply('${post.id}', ${asAdmin ? 'true' : 'false'})">Reply</button>
+      </div>`;
+  return `<div class="mt-3">${repliesHtml}</div>${replyBoxHtml}`;
+}
+
+async function submitReply(postId, asAdmin){
+  const input = document.getElementById('reply-input-' + postId);
+  const body = input.value.trim();
+  if (!body) return;
+  const payload = asAdmin
+    ? { authorName: 'MOLAB Admin', authorId: '', role: 'admin', body }
+    : { authorName: session.name, authorId: session.membershipId, role: 'member', body };
+  const result = await apiPost(`/api/research/${postId}/reply`, payload, asAdmin);
+  if (!result.ok){ showToast(result.error || 'Could not post reply.'); return; }
+  input.value = '';
+  if (asAdmin) renderAdminResearch(); else renderResearchFeed();
+}
+
+async function renderResearchFeed(){
+  const data = await apiGet('/api/research');
+  const all = data.research || [];
+  const feed = document.getElementById('researchFeed');
+  const visible = all.filter(r => r.status !== 'removed');
+  feed.innerHTML = visible.length ? visible.map(r => `
+    <div class="card p-4">
+      <div class="flex items-center justify-between">
+        <div class="font-display text-base text-[#F2EFE6]">${escapeHtml(r.title)}</div>
+        ${r.status==='flagged' ? '<span class="badge bg-[#3A2410] text-[#F5B544]">Flagged</span>' : ''}
+      </div>
+      <div class="text-[10px] text-[#7FA08F] font-mono mb-2">${escapeHtml(r.name)} · ${r.membershipId} · ${new Date(r.date).toLocaleDateString()}</div>
+      <div class="text-sm text-[#C7D6CC]">${escapeHtml(r.body)}</div>
+      ${renderRepliesHtml(r, false)}
+    </div>
+  `).join('') : '<div class="card p-6 text-center text-sm text-[#7FA08F]">No pitches yet — be the first to share an idea.</div>';
+}
+
+/* ============================================================
+   MODAL HELPERS
+   ============================================================ */
+function showModal(innerHtml){
+  document.getElementById('modalHost').innerHTML = `
+    <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
+      <div class="card p-6 w-full max-w-md">${innerHtml}</div>
+    </div>`;
+}
+function closeModal(){ document.getElementById('modalHost').innerHTML = ''; }
+
+/* ============================================================
+   CONTACT ADMIN
+   ============================================================ */
+function openContactAdminModal(){
+  const prefillName = session.name && session.role === 'member' ? session.name : '';
+  showModal(`
+    <h3 class="font-display text-lg text-[#F2EFE6] mb-1">Contact MOLAB Admin</h3>
+    <p class="text-xs text-[#7FA08F] mb-4">Reach the MOLAB Pakistan administrators directly, or email <a class="text-[#5EEAD4] hover:underline" href="mailto:molabpakistan@gmail.com">molabpakistan@gmail.com</a>.</p>
+    <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Your Name</label>
+    <input id="contactNameInput" class="field mb-3" value="${escapeHtml(prefillName)}" placeholder="Full name"/>
+    <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Your Email (optional)</label>
+    <input id="contactEmailInput" class="field mb-3" placeholder="you@example.com"/>
+    <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Message</label>
+    <textarea id="contactMessageInput" class="field mb-4" rows="4" placeholder="How can MOLAB admin help?"></textarea>
+    <div class="flex gap-2 justify-end">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitContactAdmin()">Send Message</button>
+    </div>
+  `);
+}
+async function submitContactAdmin(){
+  const name = document.getElementById('contactNameInput').value.trim();
+  const email = document.getElementById('contactEmailInput').value.trim();
+  const message = document.getElementById('contactMessageInput').value.trim();
+  if (!name || !message){ showToast('Please enter your name and a message.'); return; }
+  const result = await apiPost('/api/contact-admin', { name, email, message });
+  if (!result.ok){ showToast(result.error || 'Could not send message.'); return; }
+  closeModal();
+  showToast('Message sent to MOLAB admin.');
+}
+
+/* ============================================================
+   ADMIN DASHBOARD
+   ============================================================ */
+async function enterAdminDashboard(){
+  switchAdminTab('atab-overview');
+  await renderOverview();
+}
+
+function switchAdminTab(id){
+  document.querySelectorAll('#view-admin-dashboard .tab-panel').forEach(p=>p.classList.add('hidden-view'));
+  document.getElementById(id).classList.remove('hidden-view');
+  document.querySelectorAll('#view-admin-dashboard .tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`#view-admin-dashboard .tab-btn[data-tab="${id}"]`).classList.add('active');
+  if (id==='atab-overview') renderOverview();
+  if (id==='atab-members') renderMembersTable();
+  if (id==='atab-research') renderAdminResearch();
+  if (id==='atab-perks') renderPerksTab();
+  if (id==='atab-flags') renderFlagsFeed();
+  if (id==='atab-support') renderSupportInbox();
+}
+
+async function renderOverview(){
+  const stats = await apiGet('/api/stats');
+  document.getElementById('statRoster').innerText = stats.totalMembers || 0;
+  document.getElementById('statLoggedIn').innerText = stats.activeMembers || 0;
+  document.getElementById('statResearch').innerText = 0;
+
+  const membersData = await apiGet('/api/admin/members', true);
+  const members = membersData.members || [];
+  const todayStr = new Date().toDateString();
+  const activeToday = members.filter(m => m.lastLogin && new Date(m.lastLogin).toDateString()===todayStr).length;
+  document.getElementById('statActiveToday').innerText = activeToday;
+  document.getElementById('statRestricted').innerText = members.filter(m => m.restricted).length;
+
+  const researchData = await apiGet('/api/research');
+  document.getElementById('statResearch').innerText = (researchData.research||[]).filter(r=>r.status!=='removed').length;
+
+  const log = await apiGet('/api/admin/activity', true);
+  const feed = document.getElementById('activityFeed');
+  feed.innerHTML = (log.activity||[]).map(e => `
+    <div class="flex items-center justify-between text-xs border-b border-[#1E2620] pb-2">
+      <div><span class="text-[#5EEAD4] font-mono">${e.type}</span> — ${escapeHtml(e.detail)}</div>
+      <div class="text-[#7FA08F] font-mono">${escapeHtml(e.name)} · ${new Date(e.ts).toLocaleString()}</div>
+    </div>`).join('') || '<div class="text-xs text-[#7FA08F]">No activity yet.</div>';
+}
+
+function openBroadcastModal(){
+  showModal(`
+    <h3 class="font-display text-lg text-[#F2EFE6] mb-1">Broadcast to All Members</h3>
+    <p class="text-xs text-[#7FA08F] mb-4">Sends an in-app notification and an email (BCC) to every active member with an email on file.</p>
+    <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Subject</label>
+    <input id="broadcastSubjectInput" class="field mb-3" placeholder="Official MOLAB Pakistan Announcement"/>
+    <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Message</label>
+    <textarea id="broadcastBodyInput" class="field mb-4" rows="5"></textarea>
+    <div class="flex gap-2 justify-end">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="sendBroadcast()">Send to All Members</button>
+    </div>
+  `);
+}
+async function sendBroadcast(){
+  const subject = document.getElementById('broadcastSubjectInput').value.trim();
+  const body = document.getElementById('broadcastBodyInput').value.trim();
+  if (!subject || !body){ showToast('Please enter a subject and message.'); return; }
+  const result = await apiPost('/api/admin/broadcast', { subject, body }, true);
+  if (!result.ok){ showToast(result.error || 'Broadcast failed.'); return; }
+  closeModal();
+  showToast(`Notified ${result.notifiedCount} member(s)` + (result.emailSent ? ' and emailed them.' : ' (email not configured — see README).'));
+  renderOverview();
+}
+
+/* ---- Roster upload ---- */
+let rosterParsedRows = [];
+let rosterHeaders = [];
+
+document.addEventListener('change', (e) => {
+  if (e.target && e.target.id === 'rosterFileInput'){
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const wb = XLSX.read(ev.target.result, { type:'binary' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+      if (!rows.length){ showToast('No rows found in file.'); return; }
+      rosterParsedRows = rows;
+      rosterHeaders = Object.keys(rows[0]);
+      buildRosterMappingUI();
+    };
+    reader.readAsBinaryString(file);
+  }
+});
+
+function guessColumn(headers, keywords, exclude){
+  const lower = headers.map(h=>h.toLowerCase());
+  for (const h of lower){
+    if (exclude && exclude.some(x=>h.includes(x))) continue;
+    if (keywords.some(k=>h.includes(k))) return headers[lower.indexOf(h)];
+  }
+  return headers[0] || '';
+}
+
+function buildRosterMappingUI(){
+  document.getElementById('rosterMappingCard').classList.remove('hidden-view');
+  const optHtml = rosterHeaders.map(h=>`<option value="${escapeHtml(h)}">${escapeHtml(h)}</option>`).join('');
+  document.getElementById('mapNameCol').innerHTML = optHtml;
+  document.getElementById('mapIdCol').innerHTML = optHtml;
+  document.getElementById('mapEmailCol').innerHTML = '<option value="">— none —</option>' + optHtml;
+  document.getElementById('mapCountryCol').innerHTML = '<option value="">— none —</option>' + optHtml;
+
+  document.getElementById('mapNameCol').value = guessColumn(rosterHeaders, ['name'], ['email']);
+  document.getElementById('mapIdCol').value = guessColumn(rosterHeaders, ['membership','id']);
+  document.getElementById('mapEmailCol').value = guessColumn(rosterHeaders, ['email']);
+  document.getElementById('mapCountryCol').value = guessColumn(rosterHeaders, ['country']);
+
+  const table = document.getElementById('rosterPreviewTable');
+  const preview = rosterParsedRows.slice(0,5);
+  table.innerHTML = `<thead><tr>${rosterHeaders.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr></thead>
+    <tbody>${preview.map(r=>`<tr>${rosterHeaders.map(h=>`<td>${escapeHtml(r[h])}</td>`).join('')}</tr>`).join('')}</tbody>`;
+}
+
+async function confirmRosterImport(){
+  const nameCol = document.getElementById('mapNameCol').value;
+  const idCol = document.getElementById('mapIdCol').value;
+  const emailCol = document.getElementById('mapEmailCol').value;
+  const countryCol = document.getElementById('mapCountryCol').value;
+  const replace = document.getElementById('replaceRosterToggle').checked;
+
+  const entries = rosterParsedRows
+    .map(r => ({
+      name: (r[nameCol]||'').toString().trim(),
+      membershipId: (r[idCol]||'').toString().trim(),
+      email: emailCol ? (r[emailCol]||'').toString().trim() : '',
+      country: countryCol ? (r[countryCol]||'').toString().trim() : ''
+    }))
+    .filter(r => r.name && r.membershipId);
+
+  if (!entries.length){ showToast('No valid rows to import — check your column mapping.'); return; }
+
+  const result = await apiPost('/api/admin/roster/import', { entries, replace }, true);
+  if (!result.ok){ showToast(result.error || 'Import failed.'); return; }
+  showToast(`Imported ${result.imported} member(s). Roster now has ${result.total}.`);
+  document.getElementById('rosterMappingCard').classList.add('hidden-view');
+  document.getElementById('rosterFileInput').value = '';
+  renderOverview();
+}
+
+function downloadRosterTemplate(){
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet([{ 'Full Name':'Ayesha Khan', 'Membership ID':'MLB-0001', 'Email':'ayesha@example.com', 'Country':'Pakistan' }]);
+  XLSX.utils.book_append_sheet(wb, ws, 'Roster');
+  XLSX.writeFile(wb, 'vMoLab_roster_template.xlsx');
+}
+
+/* ---- Members table ---- */
+let cachedMembers = [];
+async function renderMembersTable(){
+  const data = await apiGet('/api/admin/members', true);
+  cachedMembers = data.members || [];
+  const search = (document.getElementById('memberSearchInput').value || '').toLowerCase();
+  const filtered = cachedMembers.filter(r => !search || r.name.toLowerCase().includes(search) || r.membershipId.toLowerCase().includes(search));
+  const tbody = document.getElementById('membersTableBody');
+  tbody.innerHTML = filtered.map(r => `
+      <tr>
+        <td>${escapeHtml(r.name)}</td>
+        <td class="font-mono">${escapeHtml(r.membershipId)}</td>
+        <td>${r.status==='removed' ? '<span class="badge bg-[#2A1315] text-[#E15B64]">Removed</span>' : (r.locked ? '<span class="badge bg-[#3A2410] text-[#F5B544]">Locked</span>' : '<span class="badge bg-[#142920] text-[#5EEAD4]">Active</span>')}</td>
+        <td class="text-xs">${r.membershipExpiresAt ? new Date(r.membershipExpiresAt).toLocaleDateString() : '—'}${r.restrictionReason==='expired' ? ' <span class="badge bg-[#3A2410] text-[#F5B544]">Expired</span>' : ''}</td>
+        <td>${r.loginCount || 0}</td>
+        <td class="text-xs">${r.lastLogin ? new Date(r.lastLogin).toLocaleString() : '—'}</td>
+        <td>${r.patientCount}</td>
+        <td class="whitespace-nowrap space-y-1">
+          <button class="btn-secondary" onclick="openEmailModal('${r.membershipId}')">Email</button>
+          <button class="btn-secondary" onclick="openFlagModal('${r.membershipId}')">Flag</button>
+          <button class="btn-secondary" onclick="renewMembership('${r.membershipId}')">Renew</button>
+          ${r.locked
+            ? `<button class="btn-secondary" onclick="unlockMembership('${r.membershipId}')">Unlock</button>`
+            : `<button class="btn-danger" onclick="openLockModal('${r.membershipId}')">Lock</button>`}
+          ${r.status==='removed'
+            ? `<button class="btn-secondary" onclick="reinstateMember('${r.membershipId}')">Reinstate</button>`
+            : `<button class="btn-danger" onclick="removeMember('${r.membershipId}')">Remove</button>`}
+        </td>
+      </tr>`).join('') || `<tr><td colspan="8" class="text-center text-[#7FA08F] py-6">No members found.</td></tr>`;
+}
+
+async function removeMember(id){
+  if (!confirm("Remove this member's access? They will no longer be able to log in.")) return;
+  await apiPost(`/api/admin/members/${encodeURIComponent(id)}/remove`, {}, true);
+  renderMembersTable();
+}
+async function reinstateMember(id){
+  await apiPost(`/api/admin/members/${encodeURIComponent(id)}/reinstate`, {}, true);
+  renderMembersTable();
+}
+
+function openLockModal(id){
+  showModal(`
+    <h3 class="font-display text-lg text-[#F2EFE6] mb-3">Lock Membership</h3>
+    <p class="text-xs text-[#7FA08F] mb-3">Locking has the same effect as a membership expiring — the member can still log in, but can't register patients, run simulations, export data, or post/reply on the community board, until you unlock it.</p>
+    <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Reason (e.g. community guideline concern)</label>
+    <textarea id="lockReasonInput" class="field mb-4" rows="3" placeholder="Describe why this membership is being locked..."></textarea>
+    <div class="flex gap-2 justify-end">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitMemberLock('${id}')">Lock Membership</button>
+    </div>
+  `);
+}
+async function submitMemberLock(id){
+  const reason = document.getElementById('lockReasonInput').value.trim();
+  if (!reason){ showToast('Please enter a reason.'); return; }
+  const result = await apiPost(`/api/admin/members/${encodeURIComponent(id)}/lock`, { reason }, true);
+  if (!result.ok){ showToast(result.error || 'Could not lock membership.'); return; }
+  closeModal();
+  showToast('Membership locked.');
+  renderMembersTable();
+}
+async function unlockMembership(id){
+  await apiPost(`/api/admin/members/${encodeURIComponent(id)}/unlock`, {}, true);
+  showToast('Membership unlocked.');
+  renderMembersTable();
+}
+async function renewMembership(id){
+  if (!confirm('Renew this membership for another 12 months, starting now?')) return;
+  await apiPost(`/api/admin/members/${encodeURIComponent(id)}/renew`, {}, true);
+  showToast('Membership renewed for 12 months.');
+  renderMembersTable();
+}
+
+function openFlagModal(id){
+  showModal(`
+    <h3 class="font-display text-lg text-[#F2EFE6] mb-3">Flag Member</h3>
+    <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Reason</label>
+    <textarea id="flagReasonInput" class="field mb-4" rows="3" placeholder="Describe the community guideline concern..."></textarea>
+    <div class="flex gap-2 justify-end">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitMemberFlag('${id}')">Flag Member</button>
+    </div>
+  `);
+}
+async function submitMemberFlag(id){
+  const reason = document.getElementById('flagReasonInput').value.trim();
+  if (!reason){ showToast('Please enter a reason.'); return; }
+  await apiPost(`/api/admin/members/${encodeURIComponent(id)}/flag`, { reason }, true);
+  closeModal();
+  showToast('Member flagged.');
+  renderFlagsFeed();
+}
+
+function openEmailModal(id){
+  showModal(`
+    <h3 class="font-display text-lg text-[#F2EFE6] mb-3">Message Member</h3>
+    <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Recipient Email (if not on file)</label>
+    <input id="emailToInput" class="field mb-3" placeholder="student@example.com"/>
+    <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Subject</label>
+    <input id="emailSubjectInput" class="field mb-3" placeholder="Regarding your MOLAB membership"/>
+    <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Message</label>
+    <textarea id="emailBodyInput" class="field mb-4" rows="4"></textarea>
+    <p class="text-[10px] text-[#7FA08F] mb-3">This delivers an in-app notification immediately, and emails the member if an address is on file.</p>
+    <div class="flex gap-2 justify-end">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="sendMemberMessage('${id}')">Send</button>
+    </div>
+  `);
+}
+async function sendMemberMessage(id){
+  const toEmailOverride = document.getElementById('emailToInput').value.trim();
+  const subject = document.getElementById('emailSubjectInput').value.trim();
+  const body = document.getElementById('emailBodyInput').value.trim();
+  if (!body){ showToast('Please enter a message.'); return; }
+  const result = await apiPost(`/api/admin/members/${encodeURIComponent(id)}/message`, { subject, body, toEmailOverride }, true);
+  if (!result.ok){ showToast(result.error || 'Could not send.'); return; }
+  closeModal();
+  showToast('Message delivered in-app' + (result.emailSent ? ' and by email.' : '.'));
+}
+
+/* ---- Admin research moderation ---- */
+async function renderAdminResearch(){
+  const data = await apiGet('/api/research');
+  const all = data.research || [];
+  const feed = document.getElementById('adminResearchFeed');
+  feed.innerHTML = all.length ? all.map(r => `
+    <div class="card p-4">
+      <div class="flex items-center justify-between">
+        <div class="font-display text-base text-[#F2EFE6]">${escapeHtml(r.title)}</div>
+        <span class="badge ${r.status==='removed' ? 'bg-[#2A1315] text-[#E15B64]' : r.status==='flagged' ? 'bg-[#3A2410] text-[#F5B544]' : 'bg-[#142920] text-[#5EEAD4]'}">${r.status}</span>
+      </div>
+      <div class="text-[10px] text-[#7FA08F] font-mono mb-2">${escapeHtml(r.name)} · ${r.membershipId} · ${new Date(r.date).toLocaleDateString()}</div>
+      <div class="text-sm text-[#C7D6CC] mb-2">${escapeHtml(r.body)}</div>
+      <div class="flex gap-2 mb-2">
+        ${r.status!=='flagged' ? `<button class="btn-secondary" onclick="setResearchStatus('${r.id}','flagged')">Flag</button>` : ''}
+        ${r.status!=='removed' ? `<button class="btn-danger" onclick="setResearchStatus('${r.id}','removed')">Remove</button>` : `<button class="btn-secondary" onclick="setResearchStatus('${r.id}','open')">Restore</button>`}
+      </div>
+      ${renderRepliesHtml(r, true)}
+    </div>
+  `).join('') : '<div class="card p-6 text-center text-sm text-[#7FA08F]">No research pitches submitted yet.</div>';
+}
+async function setResearchStatus(id, status){
+  await apiPost(`/api/research/${id}/status`, { status }, true);
+  renderAdminResearch();
+}
+
+/* ---- Perks tab ---- */
+document.addEventListener('change', (e) => {
+  if (e.target && e.target.id === 'perkTypeSelect'){
+    document.getElementById('perkCustomInput').classList.toggle('hidden-view', e.target.value !== '__custom__');
+  }
+});
+
+async function renderPerksTab(){
+  const membersData = await apiGet('/api/admin/members', true);
+  const members = (membersData.members || []).filter(m => m.status !== 'removed');
+  const sel = document.getElementById('perkMemberSelect');
+  sel.innerHTML = members.map(m => `<option value="${escapeHtml(m.membershipId)}" data-name="${escapeHtml(m.name)}">${escapeHtml(m.name)} (${escapeHtml(m.membershipId)})</option>`).join('');
+
+  const perksData = await apiGet('/api/admin/perks', true);
+  const list = document.getElementById('perksList');
+  list.innerHTML = (perksData.perks || []).length ? perksData.perks.map(p => `
+    <div class="card p-4 flex items-center justify-between">
+      <div>
+        <div class="font-mono text-[10px] text-[#5EEAD4] uppercase tracking-wider">${escapeHtml(p.perkType)}</div>
+        <div class="font-display text-base text-[#F2EFE6]">${escapeHtml(p.memberName)}</div>
+        ${p.note ? `<div class="text-xs text-[#7FA08F] mt-0.5">${escapeHtml(p.note)}</div>` : ''}
+        <div class="text-[10px] text-[#4E5F55] font-mono mt-1">${new Date(p.assignedAt).toLocaleDateString()}</div>
+      </div>
+      <button class="btn-danger" onclick="removePerk('${p.id}')">Remove</button>
+    </div>
+  `).join('') : '<div class="card p-6 text-center text-sm text-[#7FA08F]">No perks awarded yet.</div>';
+}
+
+async function assignPerk(){
+  const sel = document.getElementById('perkMemberSelect');
+  const membershipId = sel.value;
+  const memberName = sel.selectedOptions[0] ? sel.selectedOptions[0].dataset.name : '';
+  const typeSel = document.getElementById('perkTypeSelect').value;
+  const perkType = typeSel === '__custom__' ? document.getElementById('perkCustomInput').value.trim() : typeSel;
+  const note = document.getElementById('perkNoteInput').value.trim();
+  if (!membershipId || !perkType){ showToast('Select a member and perk type.'); return; }
+
+  const result = await apiPost('/api/admin/perks', { membershipId, memberName, perkType, note }, true);
+  if (!result.ok){ showToast(result.error || 'Could not award perk.'); return; }
+  showToast(`Awarded "${perkType}" to ${memberName}.`);
+  document.getElementById('perkNoteInput').value = '';
+  renderPerksTab();
+}
+async function removePerk(id){
+  await apiDel(`/api/admin/perks/${id}`, true);
+  renderPerksTab();
+}
+
+/* ---- Flags feed ---- */
+async function renderFlagsFeed(){
+  const data = await apiGet('/api/admin/flags', true);
+  const flags = data.flags || [];
+  const box = document.getElementById('flagsFeed');
+  box.innerHTML = flags.length ? flags.map(f => `
+    <div class="card p-4">
+      <div class="flex items-center justify-between">
+        <div class="font-display text-base text-[#F2EFE6]">${escapeHtml(f.targetLabel)} <span class="text-xs text-[#7FA08F] font-mono">(${f.targetType})</span></div>
+        <span class="badge ${f.resolved ? 'bg-[#142920] text-[#5EEAD4]' : 'bg-[#3A2410] text-[#F5B544]'}">${f.resolved ? 'resolved' : 'open'}</span>
+      </div>
+      <div class="text-[10px] text-[#7FA08F] font-mono mb-2">${new Date(f.date).toLocaleString()} · by ${escapeHtml(f.by)}</div>
+      <div class="text-sm text-[#C7D6CC] mb-3">${escapeHtml(f.reason)}</div>
+      ${!f.resolved ? `<button class="btn-secondary" onclick="resolveFlag('${f.id}')">Mark Resolved</button>` : ''}
+    </div>
+  `).join('') : '<div class="card p-6 text-center text-sm text-[#7FA08F]">No flags on record.</div>';
+}
+async function resolveFlag(id){
+  await apiPost(`/api/admin/flags/${id}/resolve`, {}, true);
+  renderFlagsFeed();
+}
+
+/* ---- Contact Admin inbox ---- */
+async function renderSupportInbox(){
+  const data = await apiGet('/api/admin/support', true);
+  const messages = data.messages || [];
+  const box = document.getElementById('supportFeed');
+  box.innerHTML = messages.length ? messages.map(m => `
+    <div class="card p-4">
+      <div class="flex items-center justify-between">
+        <div class="font-display text-base text-[#F2EFE6]">${escapeHtml(m.name)}${m.email ? ` <span class="text-xs text-[#7FA08F] font-mono">&lt;${escapeHtml(m.email)}&gt;</span>` : ''}</div>
+        <span class="badge ${m.resolved ? 'bg-[#142920] text-[#5EEAD4]' : 'bg-[#3A2410] text-[#F5B544]'}">${m.resolved ? 'resolved' : 'new'}</span>
+      </div>
+      <div class="text-[10px] text-[#7FA08F] font-mono mb-2">${new Date(m.date).toLocaleString()}</div>
+      <div class="text-sm text-[#C7D6CC] mb-3">${escapeHtml(m.message)}</div>
+      <div class="flex gap-2">
+        ${m.email ? `<a href="mailto:${escapeHtml(m.email)}" class="btn-secondary">Reply by Email</a>` : ''}
+        ${!m.resolved ? `<button class="btn-secondary" onclick="resolveSupportMessage('${m.id}')">Mark Resolved</button>` : ''}
+      </div>
+    </div>
+  `).join('') : '<div class="card p-6 text-center text-sm text-[#7FA08F]">No messages yet.</div>';
+}
+async function resolveSupportMessage(id){
+  await apiPost(`/api/admin/support/${id}/resolve`, {}, true);
+  renderSupportInbox();
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+restoreSession();
+</script>
+</body>
+</html>

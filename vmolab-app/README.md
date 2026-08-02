@@ -153,6 +153,50 @@ Email Address, Membership Status, Country, and Institution.
 
 Every name + Membership ID pair in an imported file can then sign in immediately at the Member Portal.
 
+### Going from a Google Form to an active, notified member
+
+There's no way to verify a payment screenshot without a human looking at it, so that step stays
+manual — but you don't need a separate roster file at all. Your Google Form's response Sheet already
+has almost every column vMoLab Learn needs (Full Name, Email Address, Institution/Affiliation Name,
+Membership tier, plus links to the payment proof for you to check). The only thing missing is the
+Molab Membership ID, since applicants don't have one yet. So instead of copying verified rows into a
+separate roster file, add ID directly to the responses Sheet and upload that Sheet straight to vMoLab
+Learn:
+
+1. Open the Google Sheet linked to your Form (not just an exported copy — the live one that keeps
+   collecting new responses).
+2. Add one new column at the end: **Molab Membership ID**.
+3. For each new response, click through to "Proof of Applied Membership Tier" / the fee receipt link
+   to verify payment as usual. If verified, type the ID you're assigning them into that new column for
+   their row. Leave it **blank** for anyone not yet verified.
+4. When you're ready to sync (as often as you like), in Sheets go to **File → Download → Microsoft
+   Excel (.xlsx)** and download the whole sheet — verified and unverified rows both.
+5. Upload that file under **Admin → Roster Upload**. In the column mapping step, match:
+   - Full Name Column → `Full Name`
+   - Membership ID Column → `Molab Membership ID` (the column you just added)
+   - Email Column → `Email Address`
+   - Membership Status Column → `Membership` (or whatever your tier question is titled)
+   - Institution Column → `Institution/Affiliation Name`
+   - Country Column → leave as "— none —" if you're not collecting that
+
+Any row still missing a Membership ID (i.e. not yet verified) is **automatically skipped** — the
+importer requires both a name and an ID, so unverified applicants never accidentally get access. Only
+rows with an ID you've assigned get imported, and only genuinely new ones (not already in vMoLab
+Learn) trigger the welcome email below. This means you can safely re-download and re-upload the whole
+Sheet every time you verify a new batch — nothing gets duplicated or re-emailed.
+
+The moment that upload completes, **every genuinely new member with an email address on file is
+automatically sent the welcome email** (fully editable under **Admin → Card & Letter Templates → New
+Member Welcome Email**) with their name, their Molab Membership ID, a link to the site, and
+step-by-step instructions for signing in and downloading their Membership Card and Letter. The
+confirmation toast after each upload tells you how many new members were found and how many were
+actually emailed.
+
+This still means someone has to review payment proof and type in an ID per batch — if you want it
+fully hands-off (e.g. a Google Apps Script that watches the Sheet for a "Verified" checkbox and calls
+this same roster-upload API automatically, no manual download/upload step at all), that's a reasonable
+follow-up build; just ask and I can wire that up too.
+
 ## Member login security — 4-digit passcode
 
 The first time someone logs in with a given name + Membership ID, they're immediately prompted to

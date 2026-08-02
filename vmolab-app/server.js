@@ -28,6 +28,7 @@ const { MongoClient } = require('mongodb');
 const { Pool } = require('pg');
 
 const app = express();
+app.set('trust proxy', 1); // so req.protocol reports https correctly behind Render's proxy
 app.use(express.json({ limit: '12mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -57,6 +58,17 @@ const DEFAULT_LETTER_BODY = [
   "Once again, welcome to the new era of medicine! We are thrilled to have you with us and can't wait to see what we will achieve together."
 ].join('\n\n');
 
+const DEFAULT_WELCOME_EMAIL_SUBJECT = 'Welcome to MOLAB Pakistan — Your vMoLab Learn Access';
+const DEFAULT_WELCOME_EMAIL_BODY = [
+  "Dear Molab Pakistan Members,",
+  "We would like to welcome you all to this vibrant community and can't wait to see you growing with us!",
+  "Your MOLAB Pakistan membership is now active. Here's how to get started on vMoLab Learn:\n\n1. Go to {{appUrl}}\n2. Click \"Already a Member?\" and sign in as a Member.\n3. Enter your full name and your Molab Membership ID: {{membershipId}}\n   (On your first login you'll be asked to set a 4-digit passcode — remember it, you'll need it every time you sign in after that.)\n4. Once you're in, open \"My Profile\" to download your personalized Membership Card and Welcome Letter.",
+  "For initial information, we would highly suggest going through all tabs and make sure to well familiarize yourself with the application.",
+  "In addition, please consider the following important announcements:\na. Please don't share your passcode with any other member. It is to make sure that your account remains safe. In case you forget your passcode, please reach out to us at molabpakistan@gmail.com immediately.\nb. All opportunities/workshops/courses' announcements will be broadcasted here. So, make sure to check or log in regularly on the platform.\nc. The membership duration (1 year) will start as you shall log in for the first time. After the period ends, your account will automatically get locked unless you update your subscription.\nd. Feel free to share the Welcome Letter and membership card on your social media handles. Don't forget to tag us on all your platforms.",
+  "Can't wait to see you growing, thriving and learning with us!",
+  "Your own team,\nMoLabs"
+].join('\n\n');
+
 const DEFAULT_DB = {
   roster: [],        // [{name, membershipId, email, country, institution, membershipStatus, status, locked, lockReason, lockedAt, addedAt}]
   members: {},        // { [membershipId]: {name, membershipId, email, country, membershipStatus, institution, photoUrl, passcodeHash, loginCount, firstLogin, lastLogin, notifications:[]} }
@@ -75,7 +87,9 @@ const DEFAULT_DB = {
     letterHeading: 'Welcome To The MOLAB Pakistan',
     letterBody: DEFAULT_LETTER_BODY, // admin-editable; paragraphs separated by blank lines, supports {{name}} {{institution}} {{membershipId}}
     letterSignatureName: 'Seemab Mehmood',
-    letterSignatureTitle: 'Founder & CEO'
+    letterSignatureTitle: 'Founder & CEO',
+    welcomeEmailSubject: DEFAULT_WELCOME_EMAIL_SUBJECT, // admin-editable; sent automatically to genuinely new roster members with an email on file
+    welcomeEmailBody: DEFAULT_WELCOME_EMAIL_BODY // supports {{name}} {{membershipId}} {{appUrl}}
   }
 };
 
@@ -644,7 +658,8 @@ app.post('/api/admin/roster/import', requireAdmin, async (req, res) => {
   const { entries, replace } = req.body || {};
   if (!Array.isArray(entries) || !entries.length) return res.status(400).json({ ok: false, error: 'No valid rows to import.' });
 
-  const result = await withDb(async (db) => {
+  const { imported, total, newlyAdded } = await withDb(async (db) => {
+    const existingIds = new Set(db.roster.map(r => normId(r.membershipId)));
     let roster = replace ? [] : db.roster.slice();
     let imported = 0;
     entries.forEach(entry => {
@@ -662,11 +677,35 @@ app.post('/api/admin/roster/import', requireAdmin, async (req, res) => {
       }
       imported++;
     });
+    // Genuinely new members = weren't in the roster before this call at all (robust to "replace" mode too,
+    // so re-uploading the full roster for a correction doesn't re-email everyone who already existed).
+    const newlyAdded = roster.filter(r => !existingIds.has(normId(r.membershipId)));
     db.roster = roster;
-    logActivity(db, 'roster', 'Admin', null, `Imported ${imported} membership record(s)`);
-    return { ok: true, imported, total: roster.length };
+    logActivity(db, 'roster', 'Admin', null, `Imported ${imported} membership record(s), ${newlyAdded.length} new`);
+    return { imported, total: roster.length, newlyAdded };
   });
-  res.json(result);
+
+  // Welcome-email new members outside the DB mutex so slow SMTP calls don't hold up other requests.
+  const appUrl = process.env.APP_URL || (req.protocol + '://' + req.get('host'));
+  const templatesForEmail = (await readDbRaw()).templates || DEFAULT_DB.templates;
+  const subjectTemplate = templatesForEmail.welcomeEmailSubject || DEFAULT_WELCOME_EMAIL_SUBJECT;
+  const bodyTemplate = templatesForEmail.welcomeEmailBody || DEFAULT_WELCOME_EMAIL_BODY;
+  let emailedCount = 0;
+  for (const member of newlyAdded) {
+    if (!member.email) continue;
+    const fill = (text) => (text || '')
+      .replace(/\{\{name\}\}/g, member.name || '')
+      .replace(/\{\{membershipId\}\}/g, member.membershipId || '')
+      .replace(/\{\{appUrl\}\}/g, appUrl);
+    const emailResult = await sendEmail({
+      to: member.email,
+      subject: fill(subjectTemplate),
+      text: fill(bodyTemplate)
+    });
+    if (emailResult.sent) emailedCount++;
+  }
+
+  res.json({ ok: true, imported, total, newCount: newlyAdded.length, emailedCount });
 });
 
 /* ============================================================
@@ -944,7 +983,7 @@ app.get('/api/templates', async (req, res) => {
   res.json({ ok: true, templates: db.templates || DEFAULT_DB.templates });
 });
 app.post('/api/admin/templates', requireAdmin, async (req, res) => {
-  const { cardImage, cardPositions, letterHeading, letterBody, letterSignatureName, letterSignatureTitle } = req.body || {};
+  const { cardImage, cardPositions, letterHeading, letterBody, letterSignatureName, letterSignatureTitle, welcomeEmailSubject, welcomeEmailBody } = req.body || {};
   await withDb(async (db) => {
     const current = db.templates || DEFAULT_DB.templates;
     db.templates = {
@@ -953,9 +992,11 @@ app.post('/api/admin/templates', requireAdmin, async (req, res) => {
       letterHeading: letterHeading !== undefined ? letterHeading : current.letterHeading,
       letterBody: letterBody !== undefined ? letterBody : current.letterBody,
       letterSignatureName: letterSignatureName !== undefined ? letterSignatureName : current.letterSignatureName,
-      letterSignatureTitle: letterSignatureTitle !== undefined ? letterSignatureTitle : current.letterSignatureTitle
+      letterSignatureTitle: letterSignatureTitle !== undefined ? letterSignatureTitle : current.letterSignatureTitle,
+      welcomeEmailSubject: welcomeEmailSubject !== undefined ? welcomeEmailSubject : current.welcomeEmailSubject,
+      welcomeEmailBody: welcomeEmailBody !== undefined ? welcomeEmailBody : current.welcomeEmailBody
     };
-    logActivity(db, 'templates', 'Admin', null, 'Updated membership card/letter templates');
+    logActivity(db, 'templates', 'Admin', null, 'Updated membership card/letter/welcome-email templates');
   });
   res.json({ ok: true });
 });

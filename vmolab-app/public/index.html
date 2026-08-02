@@ -610,6 +610,19 @@
         </div>
         <button onclick="saveLetterTemplate()" class="btn-primary">Save Letter Template</button>
       </div>
+
+      <div class="card p-5 mt-4">
+        <h3 class="font-display text-lg text-[#F2EFE6] mb-1">New Member Welcome Email</h3>
+        <p class="text-xs text-[#7FA08F] mb-4">Sent automatically the moment a genuinely new member is added via <b>Admin → Roster Upload</b> (never resent to members who were already in the roster). Use
+        <code class="text-[#5EEAD4]">{{name}}</code>, <code class="text-[#5EEAD4]">{{membershipId}}</code>, and <code class="text-[#5EEAD4]">{{appUrl}}</code> anywhere — they're filled in automatically per member. Separate paragraphs with a blank line.</p>
+
+        <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Subject</label>
+        <input id="welcomeEmailSubjectInput" class="field mb-3"/>
+
+        <label class="font-mono text-[10px] uppercase text-[#7FA08F] block mb-1">Body</label>
+        <textarea id="welcomeEmailBodyInput" class="field mb-4" rows="16" style="font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem;"></textarea>
+        <button onclick="saveWelcomeEmailTemplate()" class="btn-primary">Save Welcome Email</button>
+      </div>
     </div>
   </main>
 </div>
@@ -1936,11 +1949,11 @@ function buildRosterMappingUI(){
   document.getElementById('mapInstitutionCol').innerHTML = '<option value="">— none —</option>' + optHtml;
 
   document.getElementById('mapNameCol').value = guessColumn(rosterHeaders, ['name'], ['email']);
-  document.getElementById('mapIdCol').value = guessColumn(rosterHeaders, ['membership','id']);
+  document.getElementById('mapIdCol').value = guessColumn(rosterHeaders, ['molab membership id','membership id','member id','application id','id'], ['status','tier','category']);
   document.getElementById('mapEmailCol').value = guessColumn(rosterHeaders, ['email']);
-  document.getElementById('mapStatusCol').value = guessColumn(rosterHeaders, ['status','role','category','tier']);
+  document.getElementById('mapStatusCol').value = guessColumn(rosterHeaders, ['membership status','status','role','category','tier','membership'], ['id']);
   document.getElementById('mapCountryCol').value = guessColumn(rosterHeaders, ['country']);
-  document.getElementById('mapInstitutionCol').value = guessColumn(rosterHeaders, ['institution','university','hospital','organization','organisation']);
+  document.getElementById('mapInstitutionCol').value = guessColumn(rosterHeaders, ['institution','affiliation','university','hospital','organization','organisation']);
 
   const table = document.getElementById('rosterPreviewTable');
   const preview = rosterParsedRows.slice(0,5);
@@ -1972,7 +1985,13 @@ async function confirmRosterImport(){
 
   const result = await apiPost('/api/admin/roster/import', { entries, replace }, true);
   if (!result.ok){ showToast(result.error || 'Import failed.'); return; }
-  showToast(`Imported ${result.imported} member(s). Roster now has ${result.total}.`);
+  let msg = `Imported ${result.imported} member(s). Roster now has ${result.total}.`;
+  if (result.newCount > 0){
+    msg += result.emailedCount > 0
+      ? ` Welcomed ${result.emailedCount} new member(s) by email.`
+      : ` ${result.newCount} new member(s) — no welcome email sent (check they have an email on file and SMTP is configured).`;
+  }
+  showToast(msg);
   document.getElementById('rosterMappingCard').classList.add('hidden-view');
   document.getElementById('rosterFileInput').value = '';
   renderOverview();
@@ -2311,6 +2330,9 @@ async function renderTemplatesTab(){
   document.getElementById('letterBodyInput').value = templates.letterBody || '';
   document.getElementById('letterSigNameInput').value = templates.letterSignatureName || '';
   document.getElementById('letterSigTitleInput').value = templates.letterSignatureTitle || '';
+
+  document.getElementById('welcomeEmailSubjectInput').value = templates.welcomeEmailSubject || '';
+  document.getElementById('welcomeEmailBodyInput').value = templates.welcomeEmailBody || '';
 }
 
 async function saveCardPositions(){
@@ -2334,6 +2356,15 @@ async function saveLetterTemplate(){
   const result = await apiPost('/api/admin/templates', { letterHeading, letterBody, letterSignatureName, letterSignatureTitle }, true);
   if (!result.ok){ showToast(result.error || 'Could not save letter template.'); return; }
   showToast('Letter template saved.');
+}
+
+async function saveWelcomeEmailTemplate(){
+  const welcomeEmailSubject = document.getElementById('welcomeEmailSubjectInput').value.trim();
+  const welcomeEmailBody = document.getElementById('welcomeEmailBodyInput').value.trim();
+  if (!welcomeEmailSubject || !welcomeEmailBody){ showToast('Subject and body cannot be empty.'); return; }
+  const result = await apiPost('/api/admin/templates', { welcomeEmailSubject, welcomeEmailBody }, true);
+  if (!result.ok){ showToast(result.error || 'Could not save welcome email.'); return; }
+  showToast('Welcome email template saved.');
 }
 
 function readImageAsDataUrl(file){
